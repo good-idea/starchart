@@ -1,0 +1,34 @@
+# config stuff
+.vscode
+
+node_modules
+.DS_Store
+*.log
+coverage
+.env
+.env.*
+!.env.example
+# build
+dist
+lerna-debug.log
+npm-debug.log
+packages/*/lib
+.rpt2_cache
+.eslintcache
+
+# use yarn, not npm
+package-lock.json
+*.log
+
+.yalc
+yalc.lock
+
+coverage
+
+test-store
+test-frontend
+/.gtm/
+tsconfig.tsbuildinfo
+
+.yarn
+.yarnrc
