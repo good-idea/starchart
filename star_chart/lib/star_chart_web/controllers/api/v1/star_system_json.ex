@@ -17,9 +17,6 @@ defmodule StarChartWeb.API.V1.StarSystemJSON do
     %{
       id: star_system.id,
       name: star_system.name,
-      distance_light_years: star_system.distance_light_years,
-      spectral_type: star_system.spectral_type,
-      description: star_system.description
     }
   end
 end

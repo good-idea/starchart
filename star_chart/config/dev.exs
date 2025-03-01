@@ -8,7 +8,13 @@ config :star_chart, StarChart.Repo,
   database: "star_chart_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  pool_size: 10,
+  # Query timeout (milliseconds)
+  timeout: 60_000,
+  # Time to wait for connection from pool (milliseconds)
+  pool_timeout: 60_000,
+  # Ownership timeout for tests (milliseconds)
+  ownership_timeout: 60_000
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

@@ -25,3 +25,5 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 star_chart-*.tar
 
+# Data sources
+/data/*.csv
