@@ -138,6 +138,7 @@ defmodule Mix.Tasks.StarChart.ImportHyg do
       gl: star_data["gl"],
       bayer_flamsteed: star_data["bf"],
       right_ascension: parse_float(star_data["ra"]) || 0.0,
+      right_ascension_degrees: (parse_float(star_data["ra"]) || 0.0) * 15.0,
       declination: parse_float(star_data["dec"]) || 0.0,
       distance_parsecs: parse_float(star_data["dist"]) || 0.0,
       proper_motion_ra: parse_float(star_data["pmra"]) || 0.0,

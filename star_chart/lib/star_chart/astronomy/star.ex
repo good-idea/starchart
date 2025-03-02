@@ -12,6 +12,7 @@ defmodule StarChart.Astronomy.Star do
     field :gl, :string
     field :bayer_flamsteed, :string
     field :right_ascension, :float
+    field :right_ascension_degrees, :float
     field :declination, :float
     field :distance_parsecs, :float
     field :proper_motion_ra, :float
@@ -41,7 +42,7 @@ defmodule StarChart.Astronomy.Star do
     star
     |> cast(attrs, [
       :name, :proper_name, :is_primary, :hip, :hd, :hr, :gl, :bayer_flamsteed,
-      :right_ascension, :declination, :distance_parsecs,
+      :right_ascension, :right_ascension_degrees, :declination, :distance_parsecs,
       :proper_motion_ra, :proper_motion_dec, :radial_velocity,
       :apparent_magnitude, :absolute_magnitude, :spectral_type,
       :color_index, :x, :y, :z, :luminosity,
@@ -49,7 +50,7 @@ defmodule StarChart.Astronomy.Star do
       :constellation, :star_system_id
     ])
     |> validate_required([
-      :name, :is_primary, :right_ascension, :declination, 
+      :name, :is_primary, :right_ascension, :right_ascension_degrees, :declination, 
       :distance_parsecs, :x, :y, :z, :star_system_id
     ])
     |> foreign_key_constraint(:star_system_id)

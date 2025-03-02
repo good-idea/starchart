@@ -20,7 +20,6 @@ defmodule StarChart.Repo.Migrations.CreateStarSystemsAndStars do
     # Create stars table
     create table(:stars) do
       add :star_system_id, references(:star_systems, on_delete: :delete_all)
-      # Inferred from proper name or HIP/HD/HR/GL designation
       add :name, :string, null: false
       add :proper_name, :string
       add :is_primary, :boolean, default: false
@@ -28,37 +27,25 @@ defmodule StarChart.Repo.Migrations.CreateStarSystemsAndStars do
       add :hd, :integer
       add :hr, :integer
       add :gl, :string
-      # bf field
       add :bayer_flamsteed, :string
-      # ra field
       add :right_ascension, :float, null: false
-      # dec field
+      add :right_ascension_degrees, :float, null: false
       add :declination, :float, null: false
-      # dist field
       add :distance_parsecs, :float, null: false
-      # pmra field
       add :proper_motion_ra, :float, null: false
-      # pmdec field
       add :proper_motion_dec, :float, null: false
-      # rv field
       add :radial_velocity, :float, null: false
-      # mag field
       add :apparent_magnitude, :float, null: false
-      # absmag field
       add :absolute_magnitude, :float, null: false
-      # spect field
       add :spectral_type, :string
       add :color_index, :float
       add :x, :float, null: false
       add :y, :float, null: false
       add :z, :float, null: false
-      # lum field
       add :luminosity, :float, null: false
-      # var field
       add :variable_type, :string
       add :variable_min, :float
       add :variable_max, :float
-      # con field
       add :constellation, :string
 
       timestamps()
