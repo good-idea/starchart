@@ -13,7 +13,7 @@ defmodule StarChartWeb.API.V1.StarJSON do
     %{data: data(star)}
   end
 
-  defp data(%{} = star) do
+  def data(%{} = star) do
     %{
       id: star.id,
       name: star.name,

@@ -69,4 +69,20 @@ defmodule StarChart.Astronomy do
     |> Star.changeset(attrs)
     |> Repo.insert()
   end
+  
+  @doc """
+  Updates a star.
+  """
+  def update_star(%Star{} = star, attrs) do
+    star
+    |> Star.changeset(attrs)
+    |> Repo.update()
+  end
+  
+  @doc """
+  Deletes a star.
+  """
+  def delete_star(%Star{} = star) do
+    Repo.delete(star)
+  end
 end
