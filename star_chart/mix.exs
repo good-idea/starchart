@@ -41,7 +41,10 @@ defmodule StarChart.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:csv, "~> 3.0"}
+      {:csv, "~> 3.0"},
+      # Test dependencies
+      {:ex_machina, "~> 2.7", only: :test},
+      {:excoveralls, "~> 0.14", only: :test}
     ]
   end
 
@@ -56,7 +59,8 @@ defmodule StarChart.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      "test.coverage": ["test", "coveralls.html"]
     ]
   end
 end
