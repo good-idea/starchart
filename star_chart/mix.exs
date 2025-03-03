@@ -44,7 +44,7 @@ defmodule StarChart.MixProject do
       {:csv, "~> 3.0"},
       # Test dependencies
       {:ex_machina, "~> 2.7", only: :test},
-      {:excoveralls, "~> 0.14", only: :test}
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 

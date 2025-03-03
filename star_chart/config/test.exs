@@ -25,3 +25,9 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# ExCoveralls Configuration
+config :excoveralls,
+  coverage_dir: "cover",
+  formatter: ExCoveralls.Formatter.HTML,
+  ignore_modules: []
