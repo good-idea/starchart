@@ -41,6 +41,10 @@ defmodule StarChart.AstronomyTest do
       star_system1 = insert(:star_system, name: "Solar System")
       star_system2 = insert(:star_system, name: "Alpha Centauri")
 
+      # Add primary stars to each system
+      insert(:star, star_system: star_system1, name: "Sun", is_primary: true)
+      insert(:star, star_system: star_system2, name: "Alpha Centauri A", is_primary: true)
+
       star_systems = Astronomy.list_star_systems()
       assert length(star_systems) == 2
       assert Enum.any?(star_systems, fn s -> s.id == star_system1.id end)
@@ -49,6 +53,9 @@ defmodule StarChart.AstronomyTest do
 
     test "get_star_system!/1 returns the star system with given id" do
       star_system = insert(:star_system, name: "Alpha Centauri")
+      # Add a primary star
+      insert(:star, star_system: star_system, name: "Alpha Centauri A", is_primary: true)
+
       found_system = Astronomy.get_star_system!(star_system.id)
       assert found_system.id == star_system.id
       assert found_system.name == star_system.name
@@ -67,6 +74,9 @@ defmodule StarChart.AstronomyTest do
 
     test "update_star_system/2 with valid data updates the star system" do
       star_system = insert(:star_system, name: "Solar System")
+      # Add a primary star
+      insert(:star, star_system: star_system, name: "Sun", is_primary: true)
+
       update_attrs = %{name: "Updated System"}
 
       assert {:ok, %StarSystem{} = updated_system} =
@@ -77,6 +87,8 @@ defmodule StarChart.AstronomyTest do
 
     test "update_star_system/2 with invalid data returns error changeset" do
       star_system = insert(:star_system, name: "Solar System")
+      # Add a primary star
+      insert(:star, star_system: star_system, name: "Sun", is_primary: true)
 
       assert {:error, %Ecto.Changeset{}} =
                Astronomy.update_star_system(star_system, @invalid_system_attrs)
@@ -87,17 +99,24 @@ defmodule StarChart.AstronomyTest do
 
     test "delete_star_system/1 deletes the star system" do
       star_system = insert(:star_system, name: "Solar System")
+      # Add a primary star
+      insert(:star, star_system: star_system, name: "Sun", is_primary: true)
+
       assert {:ok, %StarSystem{}} = Astronomy.delete_star_system(star_system)
       assert_raise Ecto.NoResultsError, fn -> Astronomy.get_star_system!(star_system.id) end
     end
 
     test "delete_star_system/1 deletes associated stars" do
       star_system = insert(:star_system, name: "Solar System")
+      # Add a primary star
+      primary_star = insert(:star, star_system: star_system, name: "Sun", is_primary: true)
+      # Add another star
       star = insert(:star, star_system_id: star_system.id)
 
       assert {:ok, %StarSystem{}} = Astronomy.delete_star_system(star_system)
 
-      # This will raise an error if the star still exists
+      # This will raise an error if the stars still exist
+      assert_raise Ecto.NoResultsError, fn -> Astronomy.get_star!(primary_star.id) end
       assert_raise Ecto.NoResultsError, fn -> Astronomy.get_star!(star.id) end
     end
   end
@@ -105,23 +124,33 @@ defmodule StarChart.AstronomyTest do
   describe "stars" do
     setup do
       star_system = insert(:star_system, name: "Sirius System")
+      # Add a primary star to the system in the setup
+      insert(:star, name: "Sirius A", star_system_id: star_system.id, is_primary: true)
       %{star_system: star_system}
     end
 
     test "list_stars_by_system/1 returns all stars for the star system", %{
       star_system: star_system
     } do
-      star1 = insert(:star, name: "Sirius A", star_system_id: star_system.id)
-      star2 = insert(:star, name: "Sirius B", star_system_id: star_system.id)
+      # We already have a primary star from setup, so we're adding 2 more stars
+      star1 = insert(:star, name: "Sirius B", star_system_id: star_system.id)
+      star2 = insert(:star, name: "Sirius C", star_system_id: star_system.id)
 
       # Create a star in a different system to ensure filtering works
       other_system = insert(:star_system, name: "Other System")
+      # Add a primary star to the other system
+      _other_primary = insert(:star, name: "Other Primary", star_system_id: other_system.id, is_primary: true)
       _other_star = insert(:star, name: "Other Star", star_system_id: other_system.id)
 
       stars = Astronomy.list_stars_by_system(star_system.id)
-      assert length(stars) == 2
+      # We expect 3 stars: the primary star from setup + the 2 we just added
+      assert length(stars) == 3
+      
+      # Check that our 2 new stars are in the results
       assert Enum.any?(stars, fn s -> s.id == star1.id end)
       assert Enum.any?(stars, fn s -> s.id == star2.id end)
+      # Check that the primary star is also there
+      assert Enum.any?(stars, fn s -> s.is_primary end)
     end
 
     test "get_star!/1 returns the star with given id", %{star_system: star_system} do

@@ -37,9 +37,9 @@ defmodule StarChartWeb.API.V1.StarSystemJSON do
       name: star_system.name
     }
 
-    # Add stars if they're preloaded
-    if Ecto.assoc_loaded?(star_system.stars) do
-      Map.put(base, :stars, for(star <- star_system.stars, do: StarJSON.data(star)))
+    # Add primary star if it's available
+    if Map.has_key?(star_system, :primary_star) && star_system.primary_star do
+      Map.put(base, :primary_star, StarJSON.data(star_system.primary_star))
     else
       base
     end

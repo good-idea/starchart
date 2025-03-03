@@ -47,6 +47,7 @@ defmodule StarChart.Astronomy do
       |> limit(^page_size)
       |> offset(^((page - 1) * page_size))
       |> Repo.all()
+      |> Enum.map(&preload_primary_star/1)
 
     %{
       entries: entries,
@@ -62,13 +63,21 @@ defmodule StarChart.Astronomy do
 
   Returns `nil` if the Star System does not exist.
   """
-  def get_star_system(id), do: Repo.get(StarSystem, id)
+  def get_star_system(id) do
+    StarSystem
+    |> Repo.get(id)
+    |> preload_primary_star()
+  end
 
   @doc """
   Gets a single star_system.
   Raises `Ecto.NoResultsError` if the Star system does not exist.
   """
-  def get_star_system!(id), do: Repo.get!(StarSystem, id)
+  def get_star_system!(id) do
+    StarSystem
+    |> Repo.get!(id)
+    |> preload_primary_star()
+  end
 
   @doc """
   Creates a star_system.
@@ -141,5 +150,29 @@ defmodule StarChart.Astronomy do
   """
   def delete_star(%Star{} = star) do
     Repo.delete(star)
+  end
+
+  # Helper function to preload the primary star
+  defp preload_primary_star(nil), do: nil
+  defp preload_primary_star(star_system) do
+    # First preload all stars
+    star_system = Repo.preload(star_system, :stars)
+    
+    # Then find the primary star
+    primary_star = 
+      star_system.stars
+      |> Enum.find(fn star -> star.is_primary end)
+    
+    # Apply virtual fields only if we found a primary star
+    primary_star = 
+      if primary_star do
+        Star.with_virtual_fields(primary_star)
+      else
+        # Raise an exception if no primary star is found
+        raise "No primary star found for star system #{star_system.id} (#{star_system.name})"
+      end
+    
+    # Put the primary star in a separate field
+    Map.put(star_system, :primary_star, primary_star)
   end
 end
