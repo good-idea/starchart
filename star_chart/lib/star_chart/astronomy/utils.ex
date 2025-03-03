@@ -46,4 +46,48 @@ defmodule StarChart.Astronomy.Utils do
   def light_years_to_parsec(light_years) when is_number(light_years) do
     light_years * 0.3066
   end
+
+  @doc """
+  Converts Right Ascension from hours to degrees.
+
+  ## Parameters
+
+    - `hours`: Right Ascension in hours (float or integer).
+
+  ## Returns
+
+    - Right Ascension in degrees (float).
+
+  ## Examples
+
+      iex> StarChart.Astronomy.Utils.hours_to_degrees(1)
+      15.0
+
+  """
+  @spec hours_to_degrees(number()) :: float()
+  def hours_to_degrees(hours) when is_number(hours) do
+    hours * 15.0
+  end
+
+  @doc """
+  Converts Right Ascension from degrees to hours.
+
+  ## Parameters
+
+    - `degrees`: Right Ascension in degrees (float or integer).
+
+  ## Returns
+
+    - Right Ascension in hours (float).
+
+  ## Examples
+
+      iex> StarChart.Astronomy.Utils.degrees_to_hours(15.0)
+      1.0
+
+  """
+  @spec degrees_to_hours(number()) :: float()
+  def degrees_to_hours(degrees) when is_number(degrees) do
+    degrees / 15.0
+  end
 end

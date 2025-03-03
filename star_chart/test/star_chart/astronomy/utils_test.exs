@@ -60,4 +60,62 @@ defmodule StarChart.Astronomy.UtilsTest do
       assert Utils.light_years_to_parsec(large_light_years) == 0.3066 * large_light_years
     end
   end
+
+  describe "hours_to_degrees/1" do
+    test "converts 1 hour to 15 degrees" do
+      assert Utils.hours_to_degrees(1) == 15.0
+    end
+
+    test "converts 0 hours to 0 degrees" do
+      assert Utils.hours_to_degrees(0) == 0.0
+    end
+
+    test "converts negative hours to negative degrees" do
+      assert Utils.hours_to_degrees(-2.5) == -37.5
+    end
+
+    test "converts floating-point hours accurately" do
+      assert_in_delta Utils.hours_to_degrees(1.5), 22.5, 0.0001
+    end
+
+    test "raises FunctionClauseError when given a non-numeric input" do
+      assert_raise FunctionClauseError, fn ->
+        Utils.hours_to_degrees("one hour")
+      end
+    end
+
+    test "handles extremely large hour values" do
+      large_hours = 1.0e6
+      assert Utils.hours_to_degrees(large_hours) == 15.0 * large_hours
+    end
+  end
+
+  describe "degrees_to_hours/1" do
+    test "converts 15 degrees to 1 hour" do
+      assert_in_delta Utils.degrees_to_hours(15.0), 1.0, 0.0001
+    end
+
+    test "converts 0 degrees to 0 hours" do
+      assert Utils.degrees_to_hours(0) == 0.0
+    end
+
+    test "converts negative degrees to negative hours" do
+      assert_in_delta Utils.degrees_to_hours(-37.5), -2.5, 0.0001
+    end
+
+    test "converts floating-point degrees accurately" do
+      assert_in_delta Utils.degrees_to_hours(22.5), 1.5, 0.0001
+    end
+
+    test "raises FunctionClauseError when given a non-numeric input" do
+      assert_raise FunctionClauseError, fn ->
+        Utils.degrees_to_hours("fifteen degrees")
+      end
+    end
+
+    test "handles extremely large degree values" do
+      large_degrees = 1.0e6
+      assert Utils.degrees_to_hours(large_degrees) == large_degrees / 15.0
+    end
+  end
 end
