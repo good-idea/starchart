@@ -22,7 +22,7 @@ When in Architect mode, follow this workflow:
 5. Work on each task one at a time.
 
    1. Suggest files from the repo map that should be added to the chat
-   2. Propose code changes to achieve the task
+   2. Propose code changes to achieve the task. Be sure to follow the test-driven-development guidelines below.
    3. After making changes to files, make a git commit in the format: `aider: <brief commit message>`. Use the `--no-verify` flag for these commits.
    4. Ask me if these changes are satisfactory.
       - If they are not, return to step 5.1 for the current task.

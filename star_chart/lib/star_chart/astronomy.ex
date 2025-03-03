@@ -66,7 +66,7 @@ defmodule StarChart.Astronomy do
   def get_star_system(id) do
     StarSystem
     |> Repo.get(id)
-    |> preload_primary_star()
+    |> preload_all_stars()
   end
 
   @doc """
@@ -76,7 +76,7 @@ defmodule StarChart.Astronomy do
   def get_star_system!(id) do
     StarSystem
     |> Repo.get!(id)
-    |> preload_primary_star()
+    |> preload_all_stars()
   end
 
   @doc """
@@ -152,16 +152,46 @@ defmodule StarChart.Astronomy do
     Repo.delete(star)
   end
 
-  # Helper function to preload the primary star
+  # Helper function to preload only primary star (for index)
   defp preload_primary_star(nil), do: nil
   defp preload_primary_star(star_system) do
-    # First preload all stars
+    # Preload all stars to find the primary
     star_system = Repo.preload(star_system, :stars)
     
-    # Then find the primary star
+    # Find the primary star
     primary_star = 
       star_system.stars
       |> Enum.find(fn star -> star.is_primary end)
+    
+    # Apply virtual fields only if we found a primary star
+    primary_star = 
+      if primary_star do
+        Star.with_virtual_fields(primary_star)
+      else
+        nil
+      end
+    
+    # Put the primary star in a separate field and add star count
+    star_system
+    |> Map.put(:primary_star, primary_star)
+    |> Map.put(:star_count, length(star_system.stars))
+  end
+
+  # Helper function to preload all stars (for show)
+  defp preload_all_stars(nil), do: nil
+  defp preload_all_stars(star_system) do
+    # First preload all stars
+    star_system = Repo.preload(star_system, :stars)
+    
+    # Then find the primary star and secondary stars
+    primary_star = 
+      star_system.stars
+      |> Enum.find(fn star -> star.is_primary end)
+    
+    secondary_stars = 
+      star_system.stars
+      |> Enum.filter(fn star -> !star.is_primary end)
+      |> Enum.map(&Star.with_virtual_fields/1)
     
     # Apply virtual fields only if we found a primary star
     primary_star = 
@@ -172,7 +202,10 @@ defmodule StarChart.Astronomy do
         raise "No primary star found for star system #{star_system.id} (#{star_system.name})"
       end
     
-    # Put the primary star in a separate field
-    Map.put(star_system, :primary_star, primary_star)
+    # Put the primary star and secondary stars in separate fields and add star count
+    star_system
+    |> Map.put(:primary_star, primary_star)
+    |> Map.put(:secondary_stars, secondary_stars)
+    |> Map.put(:star_count, length(star_system.stars))
   end
 end

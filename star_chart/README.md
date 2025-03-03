@@ -63,11 +63,13 @@ Example: `/api/v1/star_systems?page=2&page_size=50`
   "data": [
     {
       "id": 1,
-      "name": "Sol"
+      "name": "Sol",
+      "star_count": 1
     },
     {
       "id": 2,
-      "name": "Alpha Centauri"
+      "name": "Alpha Centauri",
+      "star_count": 3
     },
     ...
   ],
@@ -83,11 +85,68 @@ Example: `/api/v1/star_systems?page=2&page_size=50`
 The response includes:
 
 - `data`: Array of star systems for the current page
+  - `id`: The unique identifier for the star system
+  - `name`: The name of the star system
+  - `star_count`: The total number of stars in this system
 - `meta`: Pagination metadata
   - `page`: Current page number
   - `page_size`: Number of items per page
   - `total_entries`: Total number of star systems in the database
   - `total_pages`: Total number of pages available
+
+#### Star System Details Response
+
+When fetching a specific star system by ID, the response includes:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Alpha Centauri",
+    "star_count": 3,
+    "primary_star": {
+      "id": 1,
+      "name": "Alpha Centauri A",
+      "proper_name": "Rigil Kentaurus",
+      "is_primary": true,
+      "distance_parsecs": 4.37,
+      "apparent_magnitude": -0.27,
+      "absolute_magnitude": 4.38,
+      "spectral_type": "G2V",
+      ...
+    },
+    "secondary_stars": [
+      {
+        "id": 2,
+        "name": "Alpha Centauri B",
+        "is_primary": false,
+        "distance_parsecs": 4.37,
+        "apparent_magnitude": 1.33,
+        "spectral_type": "K1V",
+        ...
+      },
+      {
+        "id": 3,
+        "name": "Proxima Centauri",
+        "is_primary": false,
+        "distance_parsecs": 4.24,
+        "apparent_magnitude": 11.05,
+        "spectral_type": "M5.5Ve",
+        ...
+      }
+    ]
+  }
+}
+```
+
+The response includes:
+
+- `data`: The star system details
+  - `id`: The unique identifier for the star system
+  - `name`: The name of the star system
+  - `star_count`: The total number of stars in this system
+  - `primary_star`: Details about the primary star in the system
+  - `secondary_stars`: Array of all non-primary stars in the system
 
 ## Learn More
 

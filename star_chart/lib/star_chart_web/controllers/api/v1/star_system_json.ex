@@ -37,9 +37,23 @@ defmodule StarChartWeb.API.V1.StarSystemJSON do
       name: star_system.name
     }
 
+    # Add star count if it's available
+    base = if Map.has_key?(star_system, :star_count) do
+      Map.put(base, :star_count, star_system.star_count)
+    else
+      base
+    end
+
     # Add primary star if it's available
-    if Map.has_key?(star_system, :primary_star) && star_system.primary_star do
+    base = if Map.has_key?(star_system, :primary_star) && star_system.primary_star do
       Map.put(base, :primary_star, StarJSON.data(star_system.primary_star))
+    else
+      base
+    end
+
+    # Add secondary stars if they're available
+    if Map.has_key?(star_system, :secondary_stars) && star_system.secondary_stars do
+      Map.put(base, :secondary_stars, for(star <- star_system.secondary_stars, do: StarJSON.data(star)))
     else
       base
     end
