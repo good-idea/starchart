@@ -2,17 +2,14 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
   use StarChartWeb.ConnCase, async: true
   import StarChart.Factory
 
-  alias StarChart.Astronomy
-  alias StarChart.Astronomy.StarSystem
-
   describe "GET /api/v1/star_systems" do
     test "returns a list of star systems", %{conn: conn} do
-      star_system1 = insert(:star_system, name: "Solar System")
-      star_system2 = insert(:star_system, name: "Alpha Centauri")
+      insert(:star_system, name: "Solar System")
+      insert(:star_system, name: "Alpha Centauri")
 
       conn = get(conn, ~p"/api/v1/star_systems")
       response = json_response(conn, 200)
-      
+
       assert %{"data" => data} = response
       assert length(data) == 2
       assert Enum.any?(data, fn d -> d["name"] == "Solar System" end)
@@ -29,10 +26,11 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
     test "returns the specified star system", %{conn: conn} do
       star_system = insert(:star_system, name: "Alpha Centauri")
       conn = get(conn, ~p"/api/v1/star_systems/#{star_system.id}")
-      
+      star_system_id = star_system.id
+
       assert %{
                "data" => %{
-                 "id" => star_system.id,
+                 "id" => ^star_system_id,
                  "name" => "Alpha Centauri"
                }
              } = json_response(conn, 200)

@@ -2,7 +2,6 @@ defmodule StarChartWeb.API.V1.StarSystemController do
   use StarChartWeb, :controller
 
   alias StarChart.Astronomy
-  alias StarChart.Astronomy.StarSystem
 
   action_fallback StarChartWeb.FallbackController
 

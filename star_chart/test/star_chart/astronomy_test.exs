@@ -139,7 +139,7 @@ defmodule StarChart.AstronomyTest do
     test "update_star/2 with invalid data returns error changeset", %{star_system: star_system} do
       star = insert(:star, name: "Earth", star_system_id: star_system.id)
       invalid_attrs = %{name: nil}
-      assert {:error, %Ecto.Changeset{}} = Astronomy.update_star(star, invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Astronomy.update_star(star, Map.drop(invalid_attrs, [:star_system_id]))
       found_star = Astronomy.get_star!(star.id)
       assert found_star.name == star.name
     end

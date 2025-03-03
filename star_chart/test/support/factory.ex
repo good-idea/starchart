@@ -27,8 +27,7 @@ defmodule StarChart.Factory do
       y: 0.0,
       z: 0.0,
       luminosity: 1.0,
-      constellation: "Test Constellation",
-      star_system: build(:star_system)
+      constellation: "Test Constellation"
     }
   end
 end

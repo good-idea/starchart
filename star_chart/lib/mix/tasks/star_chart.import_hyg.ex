@@ -9,8 +9,7 @@ defmodule Mix.Tasks.StarChart.ImportHyg do
   """
   use Mix.Task
   alias StarChart.Repo
-  alias StarChart.Astronomy.{StarSystem, Star}
-  import Ecto.Query
+  import Ecto.Query, only: []
   require Logger
 
   @shortdoc "Imports star data from the HYG database"

@@ -17,6 +17,13 @@ defmodule StarChart.Astronomy do
 
   @doc """
   Gets a single star_system.
+
+  Returns `nil` if the Star System does not exist.
+  """
+  def get_star_system(id), do: Repo.get(StarSystem, id)
+
+  @doc """
+  Gets a single star_system.
   Raises `Ecto.NoResultsError` if the Star system does not exist.
   """
   def get_star_system!(id), do: Repo.get!(StarSystem, id)

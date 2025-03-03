@@ -3,6 +3,8 @@ defmodule StarChart.Astronomy.Utils do
   Provides utility functions for astronomical calculations and conversions.
   """
 
+  @parsec_to_ly StarChart.Astronomy.Constants.parsec_to_ly()
+
   @doc """
   Converts distance from parsecs to light years.
 
@@ -17,12 +19,12 @@ defmodule StarChart.Astronomy.Utils do
   ## Examples
 
       iex> StarChart.Astronomy.Utils.parsec_to_light_years(1)
-      3.26
+      3.2615637774564364568732523
 
   """
   @spec parsec_to_light_years(number()) :: float()
   def parsec_to_light_years(parsecs) when is_number(parsecs) do
-    parsecs * 3.26
+    parsecs * @parsec_to_ly
   end
 
   @doc """
@@ -44,7 +46,7 @@ defmodule StarChart.Astronomy.Utils do
   """
   @spec light_years_to_parsec(number()) :: float()
   def light_years_to_parsec(light_years) when is_number(light_years) do
-    light_years * 0.3066
+    light_years / @parsec_to_ly
   end
 
   @doc """
