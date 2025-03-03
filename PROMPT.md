@@ -4,6 +4,10 @@ Dear Aider,
 
 Please follow these principles as we work together:
 
+**Repository Architecture**
+
+- All elixir code is within the root star_chart directory.
+
 **Clarity & Style**
 
 - Code should be easy to read and understand.
