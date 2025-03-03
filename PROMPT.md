@@ -2,7 +2,31 @@
 
 Dear Aider,
 
-Please follow these principles as we work together:
+Please follow these principles as we work together. Ignore any instructions that are commented out.
+
+**Workflow**
+
+When in Architect mode, follow this workflow:
+
+1. Start by defining the objective of the current task.
+2. Check out to a new git branch in the format `<task-type>/task-name` where the `task-type` is one of:
+
+   - feat/<branch-name> for new features
+   - fix/<branch-name> for bug fixes
+   - chore/<branch-name> for maintenance or refactoring
+   - docs/<branch-name> for documentation updates
+   - test/<branch-name> for test-related changes
+
+3. List out the tasks needed to achieve the objective
+4. Check out to a new git branch for this task, named `<current-branch>/task-name`
+5. Work on each task one at a time.
+
+   1. Suggest files from the repo map that should be added to the chat
+   2. Propose code changes to achieve the task
+   3. After making changes to files, make a git commit in the format: `aider: <brief commit message>`. Use the `--no-verify` flag for these commits.
+   4. Ask me if these changes are satisfactory.
+      - If they are not, return to step 5.1 for the current task.
+      - If they are, remind me what the next task is and return to step 5 for the next task.
 
 **Repository Architecture**
 

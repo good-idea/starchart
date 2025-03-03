@@ -52,7 +52,7 @@ defmodule StarChart.Astronomy do
   def delete_star_system(%StarSystem{} = star_system) do
     Repo.delete(star_system)
   end
-  
+
   @doc """
   Gets a list of stars for a specific star system.
   """
@@ -61,13 +61,13 @@ defmodule StarChart.Astronomy do
     |> where(star_system_id: ^star_system_id)
     |> Repo.all()
   end
-  
+
   @doc """
   Gets a single star.
   Raises `Ecto.NoResultsError` if the Star does not exist.
   """
-  def get_star!(id), do: Repo.get!(Star, id)
-  
+  def get_star!(id), do: Repo.get!(Star, id) |> Star.with_virtual_fields()
+
   @doc """
   Creates a star.
   """
@@ -75,8 +75,12 @@ defmodule StarChart.Astronomy do
     %Star{}
     |> Star.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, star} -> {:ok, Star.with_virtual_fields(star)}
+      error -> error
+    end
   end
-  
+
   @doc """
   Updates a star.
   """
@@ -84,8 +88,12 @@ defmodule StarChart.Astronomy do
     star
     |> Star.changeset(attrs)
     |> Repo.update()
+    |> case do
+      {:ok, star} -> {:ok, Star.with_virtual_fields(star)}
+      error -> error
+    end
   end
-  
+
   @doc """
   Deletes a star.
   """

@@ -36,7 +36,7 @@ defmodule StarChart.Astronomy.Star do
     # Right Ascension in degrees. Calculated as right_ascension (in hours) × 15.
     # Unit: Degrees
     # Description: The angular distance of a star measured eastward along the celestial equator from the vernal equinox, expressed in degrees.
-    field :right_ascension_degrees, :float
+    field :right_ascension_degrees, :float, virtual: true
 
     # Declination in degrees. Source: HYG 'dec' column.
     # Unit: Degrees
@@ -117,7 +117,7 @@ defmodule StarChart.Astronomy.Star do
     # Constellation Abbreviation. Source: HYG 'con' column.
     # Description: The standard three-letter abbreviation of the constellation where the star is located (e.g., "Ori" for Orion).
     field :constellation, :string
-    
+
     # Relationship to Star System
     belongs_to :star_system, StarChart.Astronomy.StarSystem
 
@@ -128,18 +128,59 @@ defmodule StarChart.Astronomy.Star do
   def changeset(star, attrs) do
     star
     |> cast(attrs, [
-      :name, :proper_name, :is_primary, :hip, :hd, :hr, :gl, :bayer_flamsteed,
-      :right_ascension, :right_ascension_degrees, :declination, :distance_parsecs,
-      :proper_motion_ra, :proper_motion_dec, :radial_velocity,
-      :apparent_magnitude, :absolute_magnitude, :spectral_type,
-      :color_index, :x, :y, :z, :luminosity,
-      :variable_type, :variable_min, :variable_max,
-      :constellation, :star_system_id
+      :name,
+      :proper_name,
+      :is_primary,
+      :hip,
+      :hd,
+      :hr,
+      :gl,
+      :bayer_flamsteed,
+      :right_ascension,
+      :declination,
+      :distance_parsecs,
+      :proper_motion_ra,
+      :proper_motion_dec,
+      :radial_velocity,
+      :apparent_magnitude,
+      :absolute_magnitude,
+      :spectral_type,
+      :color_index,
+      :x,
+      :y,
+      :z,
+      :luminosity,
+      :variable_type,
+      :variable_min,
+      :variable_max,
+      :constellation,
+      :star_system_id
     ])
     |> validate_required([
-      :name, :is_primary, :right_ascension, :right_ascension_degrees, :declination, 
-      :distance_parsecs, :x, :y, :z, :star_system_id
+      :name,
+      :is_primary,
+      :right_ascension,
+      :declination,
+      :distance_parsecs,
+      :x,
+      :y,
+      :z,
+      :star_system_id
     ])
     |> foreign_key_constraint(:star_system_id)
   end
+
+  def with_virtual_fields(star) do
+    %{star | right_ascension_degrees: right_ascension_degrees(star)}
+  end
+
+  @doc """
+  Calculates the right ascension in degrees from the right ascension in hours.
+  """
+  def right_ascension_degrees(%StarChart.Astronomy.Star{right_ascension: right_ascension})
+      when is_number(right_ascension) do
+    StarChart.Astronomy.Utils.hours_to_degrees(right_ascension)
+  end
+
+  def right_ascension_degrees(_), do: nil
 end

@@ -13,7 +13,6 @@ defmodule StarChart.Factory do
     %Star{
       name: sequence(:name, &"Star #{&1}"),
       right_ascension: 0.0,
-      right_ascension_degrees: 0.0,
       declination: 0.0,
       distance_parsecs: 0.0,
       proper_motion_ra: 0.0,

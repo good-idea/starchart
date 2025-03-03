@@ -29,7 +29,6 @@ defmodule StarChart.Repo.Migrations.CreateStarSystemsAndStars do
       add :gl, :string
       add :bayer_flamsteed, :string
       add :right_ascension, :float, null: false
-      add :right_ascension_degrees, :float, null: false
       add :declination, :float, null: false
       add :distance_parsecs, :float, null: false
       add :proper_motion_ra, :float, null: false
