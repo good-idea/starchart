@@ -5,6 +5,11 @@ defmodule StarChartWeb.ErrorJSON do
   See config/config.exs.
   """
 
+  # Add this function to handle validation errors with custom detail messages
+  def render("400.json", %{detail: detail}) when is_binary(detail) do
+    %{errors: %{detail: detail}}
+  end
+
   # If you want to customize a particular status code,
   # you may add your own clauses, such as:
   #

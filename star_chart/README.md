@@ -42,10 +42,19 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 ### Star Systems
 
-| Method | Endpoint                   | Description                      |
-| ------ | -------------------------- | -------------------------------- |
-| GET    | `/api/v1/star_systems`     | List all star systems            |
-| GET    | `/api/v1/star_systems/:id` | Get a specific star system by ID |
+| Method | Endpoint                   | Description                       |
+| ------ | -------------------------- | --------------------------------- |
+| GET    | `/api/v1/star_systems`     | List all star systems (paginated) |
+| GET    | `/api/v1/star_systems/:id` | Get a specific star system by ID  |
+
+#### Pagination
+
+The star systems endpoint supports pagination through the following query parameters:
+
+- `page`: The page number to retrieve (default: 1, min: 1)
+- `page_size`: Number of items per page (default: 100, min: 1, max: 200)
+
+Example: `/api/v1/star_systems?page=2&page_size=50`
 
 #### Response Format
 
@@ -54,15 +63,31 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
   "data": [
     {
       "id": 1,
-      "name": "Sol",
-      "distance_light_years": 0.0000158,
-      "spectral_type": "G2V",
-      "description": "Our home star system, containing Earth and 7 other planets."
+      "name": "Sol"
+    },
+    {
+      "id": 2,
+      "name": "Alpha Centauri"
     },
     ...
-  ]
+  ],
+  "meta": {
+    "page": 1,
+    "page_size": 100,
+    "total_entries": 42,
+    "total_pages": 3
+  }
 }
 ```
+
+The response includes:
+
+- `data`: Array of star systems for the current page
+- `meta`: Pagination metadata
+  - `page`: Current page number
+  - `page_size`: Number of items per page
+  - `total_entries`: Total number of star systems in the database
+  - `total_pages`: Total number of pages available
 
 ## Learn More
 

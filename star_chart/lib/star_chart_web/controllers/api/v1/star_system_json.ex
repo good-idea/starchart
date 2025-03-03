@@ -2,10 +2,26 @@ defmodule StarChartWeb.API.V1.StarSystemJSON do
   alias StarChartWeb.API.V1.StarJSON
 
   @doc """
-  Renders a list of star systems.
+  Renders a list of star systems with pagination metadata.
   """
-  def index(%{star_systems: star_systems}) do
-    %{data: for(star_system <- star_systems, do: data(star_system))}
+  def index(%{
+        star_systems: %{
+          entries: entries,
+          page_number: page,
+          page_size: page_size,
+          total_entries: total_entries,
+          total_pages: total_pages
+        }
+      }) do
+    %{
+      data: for(star_system <- entries, do: data(star_system)),
+      meta: %{
+        page: page,
+        page_size: page_size,
+        total_entries: total_entries,
+        total_pages: total_pages
+      }
+    }
   end
 
   @doc """

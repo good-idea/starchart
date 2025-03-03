@@ -16,6 +16,48 @@ defmodule StarChart.Astronomy do
   end
 
   @doc """
+  Returns a paginated list of star_systems.
+
+  ## Options
+
+    * `:page` - The page number (default: 1)
+    * `:page_size` - The number of items per page (default: 20)
+
+  ## Examples
+
+      iex> list_star_systems_paginated(page: 2, page_size: 10)
+      %{entries: [%StarSystem{}, ...], page_number: 2, page_size: 10, total_entries: 50, total_pages: 5}
+
+  """
+  def list_star_systems_paginated(opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    page_size = Keyword.get(opts, :page_size, 100)
+
+    query = from s in StarSystem
+
+    # Get the total count
+    total_count = Repo.aggregate(query, :count, :id)
+    
+    # Calculate total pages
+    total_pages = ceil(total_count / page_size)
+    
+    # Get paginated results
+    entries =
+      query
+      |> limit(^page_size)
+      |> offset(^((page - 1) * page_size))
+      |> Repo.all()
+
+    %{
+      entries: entries,
+      page_number: page,
+      page_size: page_size,
+      total_entries: total_count,
+      total_pages: total_pages
+    }
+  end
+
+  @doc """
   Gets a single star_system.
 
   Returns `nil` if the Star System does not exist.
