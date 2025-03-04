@@ -54,26 +54,26 @@ defmodule StarChartWeb.API.V1.StarSystemController do
     - conn: The connection
     - params: The request parameters
       * "origin_id": The ID of the origin star system
-      * "max_distance": Maximum distance in light years (optional, default: 25.0)
+      * "distance": Maximum distance in light years (required, must be between 0.1 and 100)
 
   ## Returns
     - JSON response with nearby star systems and their distances
   """
   def nearby(conn, %{"origin_id" => origin_id} = params) do
+    # Define validation schema for the distance parameter
+    distance_schema = %{
+      "distance" => %{type: :float, min: 0.1, max: 100.0, required: true}
+    }
+    
     # Parse the origin_id to integer
-    with {id, _} <- Integer.parse(origin_id) do
-      # Extract max_distance from params if provided
-      max_distance = case params do
-        %{"max_distance" => distance_str} ->
-          case Float.parse(distance_str) do
-            {distance, _} -> distance
-            :error -> 25.0  # Default if parsing fails
-          end
-        _ -> 25.0  # Default if not provided
-      end
-
-      # Call the Nearby module to find nearby star systems
-      case Nearby.find_nearby_star_systems(id, max_distance: max_distance) do
+    with {id, _} <- Integer.parse(origin_id),
+         {:ok, validated_params} <- Params.validate_params(params, distance_schema) do
+      
+      # Extract the validated distance
+      distance = validated_params["distance"]
+      
+      # Call the Nearby module to find nearby star systems with the distance as an option
+      case Nearby.find_nearby_star_systems(id, max_distance: distance) do
         {:error, :not_found} ->
           conn
           |> put_status(:not_found)
@@ -84,6 +84,12 @@ defmodule StarChartWeb.API.V1.StarSystemController do
           render(conn, :nearby, nearby_systems: nearby_systems)
       end
     else
+      {:error, {param, message}} ->
+        conn
+        |> put_status(:bad_request)
+        |> put_view(StarChartWeb.ErrorJSON)
+        |> render(:"400", %{detail: "Invalid parameter '#{param}': #{message}"})
+      
       _ ->
         conn
         |> put_status(:bad_request)

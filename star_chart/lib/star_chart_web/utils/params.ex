@@ -122,4 +122,57 @@ defmodule StarChartWeb.Utils.Params do
       {:error, "must be a string"}
     end
   end
+
+  defp validate_param(params, key, %{type: :float} = validation) do
+    default = Map.get(validation, :default)
+    required = Map.get(validation, :required, false)
+    
+    case Map.get(params, key) do
+      nil when not required ->
+        {:ok, {key, default}}
+        
+      nil when required ->
+        {:error, "is required"}
+        
+      value when is_binary(value) ->
+        case Float.parse(value) do
+          {float_value, ""} ->
+            min = Map.get(validation, :min)
+            max = Map.get(validation, :max)
+            
+            cond do
+              not is_nil(min) and float_value < min ->
+                {:error, "must be greater than or equal to #{min}"}
+                
+              not is_nil(max) and float_value > max ->
+                {:error, "must be less than or equal to #{max}"}
+                
+              true ->
+                {:ok, {key, float_value}}
+            end
+            
+          _ ->
+            {:error, "must be a valid number"}
+        end
+        
+      value when is_number(value) ->
+        # If it's already a number, just validate min/max
+        min = Map.get(validation, :min)
+        max = Map.get(validation, :max)
+        
+        cond do
+          not is_nil(min) and value < min ->
+            {:error, "must be greater than or equal to #{min}"}
+            
+          not is_nil(max) and value > max ->
+            {:error, "must be less than or equal to #{max}"}
+            
+          true ->
+            {:ok, {key, value}}
+        end
+        
+      _ ->
+        {:error, "must be a valid number"}
+    end
+  end
 end

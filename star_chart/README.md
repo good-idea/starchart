@@ -42,10 +42,11 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 ### Star Systems
 
-| Method | Endpoint                   | Description                       |
-| ------ | -------------------------- | --------------------------------- |
-| GET    | `/api/v1/star_systems`     | List all star systems (paginated) |
-| GET    | `/api/v1/star_systems/:id` | Get a specific star system by ID  |
+| Method | Endpoint                                 | Description                                         |
+| ------ | ---------------------------------------- | --------------------------------------------------- |
+| GET    | `/api/v1/star_systems`                   | List all star systems (paginated)                   |
+| GET    | `/api/v1/star_systems/:id`               | Get a specific star system by ID                    |
+| GET    | `/api/v1/star_systems/:origin_id/nearby` | Get star systems near a specific origin star system |
 
 #### Pagination and Filtering
 
@@ -151,6 +152,69 @@ The response includes:
   - `star_count`: The total number of stars in this system
   - `primary_star`: Details about the primary star in the system
   - `secondary_stars`: Array of all non-primary stars in the system
+
+### Nearby Star Systems
+
+The nearby star systems endpoint allows you to find all star systems within a specified distance from an origin star system.
+
+#### Request Parameters
+
+- `origin_id`: The ID of the origin star system (path parameter)
+- `distance`: Maximum distance in light years (required, min: 0.1, max: 100)
+
+Example: `/api/v1/star_systems/1/nearby?distance=10.5`
+
+#### Response Format
+
+```json
+[
+  {
+    "system": {
+      "id": 2,
+      "name": "Alpha Centauri",
+      "star_count": 3,
+      "primary_star": {
+        "id": 4,
+        "name": "Alpha Centauri A",
+        "spectral_type": "G2V",
+        ...
+      }
+    },
+    "distance": {
+      "parsecs": 1.3,
+      "light_years": 4.24
+    }
+  },
+  {
+    "system": {
+      "id": 3,
+      "name": "Barnard's Star",
+      "star_count": 1,
+      "primary_star": {
+        "id": 7,
+        "name": "Barnard's Star",
+        "spectral_type": "M4V",
+        ...
+      }
+    },
+    "distance": {
+      "parsecs": 1.8,
+      "light_years": 5.96
+    }
+  },
+  ...
+]
+```
+
+The response includes an array of objects, each containing:
+
+- `system`: The star system details
+  - Same format as the star system response above
+- `distance`: The distance from the origin star system
+  - `parsecs`: Distance in parsecs
+  - `light_years`: Distance in light years
+
+The results are sorted by distance, with the closest systems first.
 
 ## Learn More
 
