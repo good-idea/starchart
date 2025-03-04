@@ -161,49 +161,59 @@ The nearby star systems endpoint allows you to find all star systems within a sp
 
 - `origin_id`: The ID of the origin star system (path parameter)
 - `distance`: Maximum distance in light years (required, min: 0.1, max: 100)
+- `page`: The page number to retrieve (default: 1, min: 1)
+- `page_size`: Number of items per page (default: 100, min: 1, max: 200)
 
-Example: `/api/v1/star_systems/1/nearby?distance=10.5`
+Example: `/api/v1/star_systems/1/nearby?distance=10.5&page=2&page_size=20`
 
 #### Response Format
 
 ```json
-[
-  {
-    "system": {
-      "id": 2,
-      "name": "Alpha Centauri",
-      "star_count": 3,
-      "primary_star": {
-        "id": 4,
-        "name": "Alpha Centauri A",
-        "spectral_type": "G2V",
-        ...
+{
+  "data": [
+    {
+      "system": {
+        "id": 2,
+        "name": "Alpha Centauri",
+        "star_count": 3,
+        "primary_star": {
+          "id": 4,
+          "name": "Alpha Centauri A",
+          "spectral_type": "G2V",
+          ...
+        }
+      },
+      "distance": {
+        "parsecs": 1.3,
+        "light_years": 4.24
       }
     },
-    "distance": {
-      "parsecs": 1.3,
-      "light_years": 4.24
-    }
-  },
-  {
-    "system": {
-      "id": 3,
-      "name": "Barnard's Star",
-      "star_count": 1,
-      "primary_star": {
-        "id": 7,
+    {
+      "system": {
+        "id": 3,
         "name": "Barnard's Star",
-        "spectral_type": "M4V",
-        ...
+        "star_count": 1,
+        "primary_star": {
+          "id": 7,
+          "name": "Barnard's Star",
+          "spectral_type": "M4V",
+          ...
+        }
+      },
+      "distance": {
+        "parsecs": 1.8,
+        "light_years": 5.96
       }
     },
-    "distance": {
-      "parsecs": 1.8,
-      "light_years": 5.96
-    }
-  },
-  ...
-]
+    ...
+  ],
+  "meta": {
+    "page": 1,
+    "page_size": 100,
+    "total_entries": 42,
+    "total_pages": 3
+  }
+}
 ```
 
 The response includes an array of objects, each containing:

@@ -32,18 +32,33 @@ defmodule StarChartWeb.API.V1.StarSystemJSON do
   end
 
   @doc """
-  Renders a list of nearby star systems with distance information.
+  Renders a list of nearby star systems with distance information and pagination metadata.
   """
-  def nearby(%{nearby_systems: nearby_systems}) do
-    Enum.map(nearby_systems, fn %{system: system, distance: distance} ->
-      %{
-        system: data(system),
-        distance: %{
-          parsecs: distance.distance_parsecs,
-          light_years: distance.distance_light_years
-        }
+  def nearby(%{
+        entries: entries,
+        page_number: page,
+        page_size: page_size,
+        total_entries: total_entries,
+        total_pages: total_pages
+      }) do
+    %{
+      data:
+        Enum.map(entries, fn %{system: system, distance: distance} ->
+          %{
+            system: data(system),
+            distance: %{
+              parsecs: distance.distance_parsecs,
+              light_years: distance.distance_light_years
+            }
+          }
+        end),
+      meta: %{
+        page: page,
+        page_size: page_size,
+        total_entries: total_entries,
+        total_pages: total_pages
       }
-    end)
+    }
   end
 
   defp data(%{} = star_system) do

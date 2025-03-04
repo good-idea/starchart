@@ -16,6 +16,6 @@ This document outlines the steps to implement a new endpoint that fetches all st
   - [ ] Spectral class filter
   - [ ] Star count filters (min_stars/max_stars)
 - [x] Update the JSON view to include distance from origin
-- [ ] Add pagination support
+- [x] Add pagination support
 - [x] Write tests for the new endpoint
 - [x] Update API documentation in README.md

@@ -54,34 +54,40 @@ defmodule StarChartWeb.API.V1.StarSystemController do
     - conn: The connection
     - params: The request parameters
       * "origin_id": The ID of the origin star system
-      * "distance": Maximum distance in light years (required, must be between 0.1 and 100)
+      * "distance": Maximum distance in light years (required, min: 0.1, max: 100)
+      * "page": The page number (default: 1, min: 1)
+      * "page_size": Number of items per page (default: 100, min: 1, max: 200)
 
   ## Returns
     - JSON response with nearby star systems and their distances
   """
   def nearby(conn, %{"origin_id" => origin_id} = params) do
-    # Define validation schema for the distance parameter
-    distance_schema = %{
-      "distance" => %{type: :float, min: 0.1, max: 100.0, required: true}
+    # Define validation schema for the parameters
+    params_schema = %{
+      "distance" => %{type: :float, min: 0.1, max: 100.0, required: true},
+      "page" => %{type: :integer, min: 1, default: 1},
+      "page_size" => %{type: :integer, min: 1, max: 200, default: 100}
     }
     
     # Parse the origin_id to integer
     with {id, _} <- Integer.parse(origin_id),
-         {:ok, validated_params} <- Params.validate_params(params, distance_schema) do
+         {:ok, validated_params} <- Params.validate_params(params, params_schema) do
       
-      # Extract the validated distance
+      # Extract the validated parameters
       distance = validated_params["distance"]
+      page = validated_params["page"]
+      page_size = validated_params["page_size"]
       
-      # Call the Nearby module to find nearby star systems with the distance as an option
-      case Nearby.find_nearby_star_systems(id, max_distance: distance) do
+      # Call the Nearby module to find nearby star systems with pagination
+      case Nearby.find_nearby_star_systems(id, max_distance: distance, page: page, page_size: page_size) do
         {:error, :not_found} ->
           conn
           |> put_status(:not_found)
           |> put_view(StarChartWeb.ErrorJSON)
           |> render(:"404")
 
-        nearby_systems ->
-          render(conn, :nearby, nearby_systems: nearby_systems)
+        paginated_systems ->
+          render(conn, :nearby, paginated_systems)
       end
     else
       {:error, {param, message}} ->
