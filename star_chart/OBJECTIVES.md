@@ -13,8 +13,8 @@ This document outlines the steps to implement a new endpoint that fetches all st
 - [x] Add filtering capabilities. (all parameters should be validated):
   - [x] Distance filter (required parameter)
   - [x] Unit conversion (parsecs/light years)
-  - [ ] Spectral class filter
-  - [ ] Star count filters (min_stars/max_stars)
+  - [x] Spectral class filter
+  - [x] Star count filters (min_stars/max_stars)
 - [x] Update the JSON view to include distance from origin
 - [x] Add pagination support
 - [x] Write tests for the new endpoint

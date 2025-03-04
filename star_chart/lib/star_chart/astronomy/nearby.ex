@@ -17,6 +17,9 @@ defmodule StarChart.Astronomy.Nearby do
       * :max_distance - Maximum distance in light years (default: 25.0)
       * :page - The page number (default: 1)
       * :page_size - The number of items per page (default: 100)
+      * :spectral_class - Filter by spectral class (optional)
+      * :min_stars - Filter for star systems with at least this many stars (optional)
+      * :max_stars - Filter for star systems with at most this many stars (optional)
 
   ## Returns
     - A map containing:
@@ -29,7 +32,7 @@ defmodule StarChart.Astronomy.Nearby do
 
   ## Examples
 
-      iex> find_star_systems(1, max_distance: 10.0, page: 2, page_size: 20)
+      iex> find_star_systems(1, max_distance: 10.0, page: 2, page_size: 20, spectral_class: "G")
       %{
         entries: [%{system: %StarSystem{...}, distance: %Distance{...}}, ...],
         page_number: 2,
@@ -44,6 +47,9 @@ defmodule StarChart.Astronomy.Nearby do
     max_distance = Keyword.get(opts, :max_distance, 25.0)
     page = Keyword.get(opts, :page, 1)
     page_size = Keyword.get(opts, :page_size, 100)
+    spectral_class = Keyword.get(opts, :spectral_class)
+    min_stars = Keyword.get(opts, :min_stars)
+    max_stars = Keyword.get(opts, :max_stars)
     
     # Convert distance to parsecs (the x,y,z coordinates use parsecs)
     distance_parsecs = Utils.light_years_to_parsec(max_distance)
@@ -55,6 +61,7 @@ defmodule StarChart.Astronomy.Nearby do
     else
       %{primary_star: %{x: origin_x, y: origin_y, z: origin_z}} = origin_system
 
+      # Start with the base query for nearby star systems
       query =
         from(s in StarSystem,
           join: star in Star,
@@ -72,6 +79,50 @@ defmodule StarChart.Astronomy.Nearby do
               ^distance_parsecs
             )
         )
+
+      # Apply spectral class filter if provided
+      query =
+        if spectral_class && spectral_class != "" do
+          from [s, star] in query,
+            where: star.spectral_class == ^spectral_class
+        else
+          query
+        end
+
+      # Apply star count filters if provided
+      query =
+        if min_stars || max_stars do
+          # Create the star count subquery
+          star_count_query = from star in Star,
+            group_by: star.star_system_id,
+            select: %{star_system_id: star.star_system_id, count: count(star.id)}
+
+          # Join with the star count subquery
+          # We need to use a different join syntax to ensure the binding is correct
+          query = from s in query,
+            join: sc in subquery(star_count_query),
+            on: s.id == sc.star_system_id
+
+          # Apply min_stars filter if provided
+          query = if min_stars do
+            from [s, star, sc] in query,
+              where: sc.count >= ^min_stars
+          else
+            query
+          end
+
+          # Apply max_stars filter if provided
+          query = if max_stars do
+            from [s, star, sc] in query,
+              where: sc.count <= ^max_stars
+          else
+            query
+          end
+
+          query
+        else
+          query
+        end
 
       # Get all nearby systems
       nearby_systems =

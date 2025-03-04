@@ -163,8 +163,12 @@ The nearby star systems endpoint allows you to find all star systems within a sp
 - `distance`: Maximum distance in light years (default: 25.0, min: 0.1, max: 100)
 - `page`: The page number to retrieve (default: 1, min: 1)
 - `page_size`: Number of items per page (default: 100, min: 1, max: 200)
+- `spectral_class`: Filter by spectral class (optional)
+  - Valid values: O, B, A, F, G, K, M, L, T, Y, U (where U represents unknown)
+- `min_stars`: Filter for star systems with at least this many stars (optional, min: 1)
+- `max_stars`: Filter for star systems with at most this many stars (optional, min: 1)
 
-Example: `/api/v1/star_systems/1/nearby?distance=10.5&page=2&page_size=20`
+Example: `/api/v1/star_systems/1/nearby?distance=10.5&page=2&page_size=20&spectral_class=G&min_stars=2`
 
 #### Response Format
 

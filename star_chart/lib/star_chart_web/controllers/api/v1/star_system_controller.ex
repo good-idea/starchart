@@ -57,6 +57,10 @@ defmodule StarChartWeb.API.V1.StarSystemController do
       * "distance": Maximum distance in light years (default: 25.0, min: 0.1, max: 100)
       * "page": The page number (default: 1, min: 1)
       * "page_size": Number of items per page (default: 100, min: 1, max: 200)
+      * "spectral_class": Filter by spectral class (optional)
+        Valid values: O, B, A, F, G, K, M, L, T, Y, U (where U represents unknown)
+      * "min_stars": Filter for star systems with at least this many stars (optional, min: 1)
+      * "max_stars": Filter for star systems with at most this many stars (optional, min: 1)
 
   ## Returns
     - JSON response with nearby star systems and their distances
@@ -66,7 +70,10 @@ defmodule StarChartWeb.API.V1.StarSystemController do
     params_schema = %{
       "distance" => %{type: :float, min: 0.1, max: 100.0, default: 25.0},
       "page" => %{type: :integer, min: 1, default: 1},
-      "page_size" => %{type: :integer, min: 1, max: 200, default: 100}
+      "page_size" => %{type: :integer, min: 1, max: 200, default: 100},
+      "spectral_class" => %{type: :string, max_length: 1, pattern: ~r/^[OBAFGKMLTY]$|^U$/},
+      "min_stars" => %{type: :integer, min: 1},
+      "max_stars" => %{type: :integer, min: 1}
     }
     
     # Parse the origin_id to integer
@@ -77,9 +84,19 @@ defmodule StarChartWeb.API.V1.StarSystemController do
       distance = validated_params["distance"]
       page = validated_params["page"]
       page_size = validated_params["page_size"]
+      spectral_class = validated_params["spectral_class"]
+      min_stars = validated_params["min_stars"]
+      max_stars = validated_params["max_stars"]
       
-      # Call the Nearby module to find nearby star systems with pagination
-      case Nearby.find_nearby_star_systems(id, max_distance: distance, page: page, page_size: page_size) do
+      # Call the Nearby module to find nearby star systems with filters and pagination
+      case Nearby.find_nearby_star_systems(id, 
+        max_distance: distance, 
+        page: page, 
+        page_size: page_size,
+        spectral_class: spectral_class,
+        min_stars: min_stars,
+        max_stars: max_stars
+      ) do
         {:error, :not_found} ->
           conn
           |> put_status(:not_found)
