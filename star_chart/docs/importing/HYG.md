@@ -56,6 +56,8 @@ The HYG Database is a compilation of stellar data from multiple catalogs. The da
     - Number (0-9) provides finer temperature gradation
     - Roman numeral (I to V) indicates luminosity class (I = supergiant, V = main sequence)
 
+    The first letter of this field is extracted to populate the `spectral_type_generic` field, which represents the main spectral class of the star.
+
 17. `ci` - Color Index (B-V). The difference between the star's magnitude in blue light and visual (yellow) light. Larger values indicate redder (cooler) stars.
 
 18. `x` - Cartesian X coordinate in parsecs from the Sun

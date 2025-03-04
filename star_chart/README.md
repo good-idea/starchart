@@ -113,6 +113,7 @@ When fetching a specific star system by ID, the response includes:
       "apparent_magnitude": -0.27,
       "absolute_magnitude": 4.38,
       "spectral_type": "G2V",
+      "spectral_type_generic": "G",
       ...
     },
     "secondary_stars": [
@@ -123,6 +124,7 @@ When fetching a specific star system by ID, the response includes:
         "distance_parsecs": 4.37,
         "apparent_magnitude": 1.33,
         "spectral_type": "K1V",
+        "spectral_type_generic": "K",
         ...
       },
       {
