@@ -54,7 +54,7 @@ defmodule StarChartWeb.API.V1.StarSystemController do
     - conn: The connection
     - params: The request parameters
       * "origin_id": The ID of the origin star system
-      * "distance": Maximum distance in light years (required, min: 0.1, max: 100)
+      * "distance": Maximum distance in light years (default: 25.0, min: 0.1, max: 100)
       * "page": The page number (default: 1, min: 1)
       * "page_size": Number of items per page (default: 100, min: 1, max: 200)
 
@@ -64,7 +64,7 @@ defmodule StarChartWeb.API.V1.StarSystemController do
   def nearby(conn, %{"origin_id" => origin_id} = params) do
     # Define validation schema for the parameters
     params_schema = %{
-      "distance" => %{type: :float, min: 0.1, max: 100.0, required: true},
+      "distance" => %{type: :float, min: 0.1, max: 100.0, default: 25.0},
       "page" => %{type: :integer, min: 1, default: 1},
       "page_size" => %{type: :integer, min: 1, max: 200, default: 100}
     }

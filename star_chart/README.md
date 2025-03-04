@@ -160,7 +160,7 @@ The nearby star systems endpoint allows you to find all star systems within a sp
 #### Request Parameters
 
 - `origin_id`: The ID of the origin star system (path parameter)
-- `distance`: Maximum distance in light years (required, min: 0.1, max: 100)
+- `distance`: Maximum distance in light years (default: 25.0, min: 0.1, max: 100)
 - `page`: The page number to retrieve (default: 1, min: 1)
 - `page_size`: Number of items per page (default: 100, min: 1, max: 200)
 
