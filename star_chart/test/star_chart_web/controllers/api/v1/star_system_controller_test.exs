@@ -216,7 +216,7 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
                    "name" => "Alpha Centauri A",
                    "proper_name" => "Rigil Kentaurus",
                    "spectral_type" => "G2V",
-                   "spectral_type_generic" => "G"
+                   "spectral_class" => "G"
                    # other fields omitted for brevity
                  },
                  "secondary_stars" => secondary_stars
@@ -233,12 +233,12 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
       # Verify first secondary star
       assert found_star1["name"] == "Alpha Centauri B"
       assert found_star1["spectral_type"] == "K1V"
-      assert found_star1["spectral_type_generic"] == "K"
+      assert found_star1["spectral_class"] == "K"
       
       # Verify second secondary star
       assert found_star2["name"] == "Proxima Centauri"
       assert found_star2["spectral_type"] == "M5.5Ve"
-      assert found_star2["spectral_type_generic"] == "M"
+      assert found_star2["spectral_class"] == "M"
     end
 
     test "returns 404 when star system is not found", %{conn: conn} do

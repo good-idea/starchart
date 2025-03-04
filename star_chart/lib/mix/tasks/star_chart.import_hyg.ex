@@ -125,16 +125,16 @@ defmodule Mix.Tasks.StarChart.ImportHyg do
     })
   end
 
-  defp extract_spectral_type_generic(nil), do: nil
-  defp extract_spectral_type_generic(""), do: nil
-  defp extract_spectral_type_generic(spectral_type) do
+  defp extract_spectral_class(nil), do: nil
+  defp extract_spectral_class(""), do: nil
+  defp extract_spectral_class(spectral_type) do
     String.slice(spectral_type, 0, 1)
   end
 
   defp create_star(star_data, star_system_id, is_primary) do
     # Extract the spectral type and its generic version
     spectral_type = star_data["spect"]
-    spectral_type_generic = extract_spectral_type_generic(spectral_type)
+    spectral_class = extract_spectral_class(spectral_type)
 
     StarChart.Astronomy.create_star(%{
       star_system_id: star_system_id,
@@ -155,7 +155,7 @@ defmodule Mix.Tasks.StarChart.ImportHyg do
       apparent_magnitude: parse_float(star_data["mag"]) || 0.0,
       absolute_magnitude: parse_float(star_data["absmag"]) || 0.0,
       spectral_type: spectral_type,
-      spectral_type_generic: spectral_type_generic,
+      spectral_class: spectral_class,
       color_index: parse_float(star_data["ci"]),
       x: parse_float(star_data["x"]) || 0.0,
       y: parse_float(star_data["y"]) || 0.0,

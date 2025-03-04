@@ -21,7 +21,7 @@ defmodule StarChart.Factory do
       apparent_magnitude: 0.0,
       absolute_magnitude: 0.0,
       spectral_type: "G2V",
-      spectral_type_generic: "G",
+      spectral_class: "G",
       color_index: 0.0,
       x: 0.0,
       y: 0.0,

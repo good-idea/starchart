@@ -55,7 +55,7 @@ defmodule StarChartWeb.API.V1.StarControllerTest do
         name: "Vega", 
         star_system_id: star_system.id,
         spectral_type: "A0Va",
-        spectral_type_generic: "A"
+        spectral_class: "A"
       )
 
       conn = get(conn, ~p"/api/v1/stars/#{star.id}")
@@ -65,7 +65,7 @@ defmodule StarChartWeb.API.V1.StarControllerTest do
       assert data["id"] == star.id
       assert data["name"] == "Vega"
       assert data["spectral_type"] == "A0Va"
-      assert data["spectral_type_generic"] == "A"
+      assert data["spectral_class"] == "A"
     end
 
     test "returns 404 when star is not found", %{conn: conn} do

@@ -79,7 +79,7 @@ defmodule StarChart.Astronomy.Star do
     
     # Generic Spectral Type. Derived from the first character of the spectral_type field.
     # Description: The main spectral class (O, B, A, F, G, K, M, etc.) without subclass information.
-    field :spectral_type_generic, :string
+    field :spectral_class, :string
 
     # Color Index (B-V). Source: HYG 'ci' column.
     # Description: A measure of the star's color, which relates to its temperature; higher values indicate redder stars.
@@ -149,7 +149,7 @@ defmodule StarChart.Astronomy.Star do
       :apparent_magnitude,
       :absolute_magnitude,
       :spectral_type,
-      :spectral_type_generic,
+      :spectral_class,
       :color_index,
       :x,
       :y,
@@ -170,7 +170,7 @@ defmodule StarChart.Astronomy.Star do
       :x,
       :y,
       :z,
-      :spectral_type_generic,
+      :spectral_class,
       :star_system_id
     ])
     |> foreign_key_constraint(:star_system_id)
