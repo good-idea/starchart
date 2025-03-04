@@ -42,59 +42,17 @@ defmodule StarChart.Astronomy do
   def list_star_systems_paginated(opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     page_size = Keyword.get(opts, :page_size, 100)
-    spectral_class = Keyword.get(opts, :spectral_class)
-    min_stars = Keyword.get(opts, :min_stars)
-    max_stars = Keyword.get(opts, :max_stars)
+    
+    # Build query params map
+    query_params = %{
+      spectral_class: Keyword.get(opts, :spectral_class),
+      min_stars: Keyword.get(opts, :min_stars),
+      max_stars: Keyword.get(opts, :max_stars)
+    }
 
-    # Start with the base query
-    query = from s in StarSystem
-
-    # Create the star count subquery first
-    star_count_query = from star in Star,
-      group_by: star.star_system_id,
-      select: %{star_system_id: star.star_system_id, count: count(star.id)}
-
-    # Apply star count filters if provided
-    query =
-      if min_stars || max_stars do
-        # Join with the star count subquery
-        query = from s in query,
-          join: sc in subquery(star_count_query),
-          on: s.id == sc.star_system_id
-
-        # Apply min_stars filter if provided
-        query = if min_stars do
-          from [s, sc] in query,
-            where: sc.count >= ^min_stars
-        else
-          query
-        end
-
-        # Apply max_stars filter if provided
-        query = if max_stars do
-          from [s, sc] in query,
-            where: sc.count <= ^max_stars
-        else
-          query
-        end
-
-        query
-      else
-        query
-      end
-
-    # Apply spectral class filter if provided
-    query =
-      if spectral_class && spectral_class != "" do
-        # Join with stars table and filter by spectral_class
-        from s in query,
-          join: star in assoc(s, :stars),
-          where: star.spectral_class == ^spectral_class,
-          distinct: true
-      else
-        query
-      end
-
+    # Build the query using the composable pattern
+    query = build_query(query_params)
+    
     # Get the total count with filters applied
     total_count = Repo.aggregate(query, :count, :id)
     
@@ -116,6 +74,61 @@ defmodule StarChart.Astronomy do
       total_entries: total_count,
       total_pages: total_pages
     }
+  end
+
+  # Base query for star systems
+  defp base_query do
+    from s in StarSystem
+  end
+
+  # Filter by spectral class
+  defp filter_by_spectral_class(query, %{spectral_class: nil}), do: query
+  defp filter_by_spectral_class(query, %{spectral_class: ""}), do: query
+  defp filter_by_spectral_class(query, %{spectral_class: spectral_class}) do
+    from s in query,
+      join: star in Star,
+      on: star.star_system_id == s.id and star.spectral_class == ^spectral_class,
+      distinct: true
+  end
+
+  # Apply star count filters
+  defp filter_by_star_count(query, %{min_stars: nil, max_stars: nil}), do: query
+  defp filter_by_star_count(query, params) do
+    # Create the star count subquery
+    star_count_query = from star in Star,
+      group_by: star.star_system_id,
+      select: %{star_system_id: star.star_system_id, count: count(star.id)}
+
+    # Join with the star count subquery
+    query = from s in query,
+      join: sc in subquery(star_count_query),
+      on: s.id == sc.star_system_id
+
+    # Apply filters
+    query
+    |> filter_by_min_stars(params)
+    |> filter_by_max_stars(params)
+  end
+
+  # Filter by minimum number of stars
+  defp filter_by_min_stars(query, %{min_stars: nil}), do: query
+  defp filter_by_min_stars(query, %{min_stars: min_stars}) do
+    from [s, sc] in query,
+      where: sc.count >= ^min_stars
+  end
+
+  # Filter by maximum number of stars
+  defp filter_by_max_stars(query, %{max_stars: nil}), do: query
+  defp filter_by_max_stars(query, %{max_stars: max_stars}) do
+    from [s, sc] in query,
+      where: sc.count <= ^max_stars
+  end
+
+  # Build the complete query by composing all filters
+  defp build_query(params) do
+    base_query()
+    |> filter_by_star_count(params)
+    |> filter_by_spectral_class(params)
   end
 
   @doc """
