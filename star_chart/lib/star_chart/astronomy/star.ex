@@ -76,6 +76,10 @@ defmodule StarChart.Astronomy.Star do
     # Spectral Type. Source: HYG 'spect' column.
     # Description: Classification of the star based on its temperature and other spectral characteristics (e.g., "G2V" for the Sun).
     field :spectral_type, :string
+    
+    # Generic Spectral Type. Derived from the first character of the spectral_type field.
+    # Description: The main spectral class (O, B, A, F, G, K, M, etc.) without subclass information.
+    field :spectral_type_generic, :string
 
     # Color Index (B-V). Source: HYG 'ci' column.
     # Description: A measure of the star's color, which relates to its temperature; higher values indicate redder stars.
@@ -145,6 +149,7 @@ defmodule StarChart.Astronomy.Star do
       :apparent_magnitude,
       :absolute_magnitude,
       :spectral_type,
+      :spectral_type_generic,
       :color_index,
       :x,
       :y,

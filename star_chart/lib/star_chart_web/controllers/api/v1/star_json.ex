@@ -34,6 +34,7 @@ defmodule StarChartWeb.API.V1.StarJSON do
       apparent_magnitude: star.apparent_magnitude,
       absolute_magnitude: star.absolute_magnitude,
       spectral_type: star.spectral_type,
+      spectral_type_generic: star.spectral_type_generic,
       color_index: star.color_index,
       x: star.x,
       y: star.y,
