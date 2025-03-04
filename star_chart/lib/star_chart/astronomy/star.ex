@@ -170,6 +170,7 @@ defmodule StarChart.Astronomy.Star do
       :x,
       :y,
       :z,
+      :spectral_type_generic,
       :star_system_id
     ])
     |> foreign_key_constraint(:star_system_id)
