@@ -10,7 +10,9 @@ defmodule StarChartWeb.API.V1.StarSystemController do
     pagination_schema = %{
       "page" => %{type: :integer, min: 1, default: 1},
       "page_size" => %{type: :integer, min: 1, max: 200, default: 100},
-      "spectral_class" => %{type: :string, max_length: 1, pattern: ~r/^[OBAFGKMLTY]$|^U$/}
+      "spectral_class" => %{type: :string, max_length: 1, pattern: ~r/^[OBAFGKMLTY]$|^U$/},
+      "min_stars" => %{type: :integer, min: 1},
+      "max_stars" => %{type: :integer, min: 1}
     }
     
     case Params.validate_params(params, pagination_schema) do
@@ -18,11 +20,15 @@ defmodule StarChartWeb.API.V1.StarSystemController do
         page = validated_params["page"]
         page_size = validated_params["page_size"]
         spectral_class = validated_params["spectral_class"]
+        min_stars = validated_params["min_stars"]
+        max_stars = validated_params["max_stars"]
         
         paginated_star_systems = Astronomy.list_star_systems_paginated(
           page: page, 
           page_size: page_size,
-          spectral_class: spectral_class
+          spectral_class: spectral_class,
+          min_stars: min_stars,
+          max_stars: max_stars
         )
         
         render(conn, :index, star_systems: paginated_star_systems)

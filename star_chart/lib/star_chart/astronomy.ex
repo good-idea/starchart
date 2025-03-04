@@ -21,8 +21,11 @@ defmodule StarChart.Astronomy do
   ## Options
 
     * `:page` - The page number (default: 1)
-    * `:page_size` - The number of items per page (default: 20)
+    * `:page_size` - The number of items per page (default: 100)
     * `:spectral_class` - Filter by spectral class (optional)
+      Valid values: O, B, A, F, G, K, M, L, T, Y, U (where U represents unknown)
+    * `:min_stars` - Filter for star systems with at least this many stars (optional)
+    * `:max_stars` - Filter for star systems with at most this many stars (optional)
 
   ## Examples
 
@@ -32,14 +35,53 @@ defmodule StarChart.Astronomy do
       iex> list_star_systems_paginated(page: 1, page_size: 10, spectral_class: "G")
       %{entries: [%StarSystem{}, ...], page_number: 1, page_size: 10, total_entries: 15, total_pages: 2}
 
+      iex> list_star_systems_paginated(min_stars: 2, max_stars: 3)
+      %{entries: [%StarSystem{}, ...], page_number: 1, page_size: 100, total_entries: 8, total_pages: 1}
+
   """
   def list_star_systems_paginated(opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     page_size = Keyword.get(opts, :page_size, 100)
     spectral_class = Keyword.get(opts, :spectral_class)
+    min_stars = Keyword.get(opts, :min_stars)
+    max_stars = Keyword.get(opts, :max_stars)
 
     # Start with the base query
     query = from s in StarSystem
+
+    # Create the star count subquery first
+    star_count_query = from star in Star,
+      group_by: star.star_system_id,
+      select: %{star_system_id: star.star_system_id, count: count(star.id)}
+
+    # Apply star count filters if provided
+    query =
+      if min_stars || max_stars do
+        # Join with the star count subquery
+        query = from s in query,
+          join: sc in subquery(star_count_query),
+          on: s.id == sc.star_system_id
+
+        # Apply min_stars filter if provided
+        query = if min_stars do
+          from [s, sc] in query,
+            where: sc.count >= ^min_stars
+        else
+          query
+        end
+
+        # Apply max_stars filter if provided
+        query = if max_stars do
+          from [s, sc] in query,
+            where: sc.count <= ^max_stars
+        else
+          query
+        end
+
+        query
+      else
+        query
+      end
 
     # Apply spectral class filter if provided
     query =

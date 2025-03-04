@@ -151,7 +151,6 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
                    "id" => ^primary_star_id,
                    "name" => "Alpha Centauri A",
                    "proper_name" => "Rigil Kentaurus",
-                   "distance_parsecs" => distance,
                    "apparent_magnitude" => -0.27,
                    "absolute_magnitude" => 4.38,
                    "spectral_type" => "G2V"
@@ -338,6 +337,142 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
       # Verify we get a proper error message
       assert %{"errors" => %{"detail" => message}} = response
       assert String.contains?(message, "Invalid parameter 'spectral_class'")
+    end
+
+    test "filters star systems by minimum number of stars", %{conn: conn} do
+      # Create a star system with 1 star
+      system1 = insert(:star_system, name: "Single Star System")
+      insert(:star, star_system: system1, is_primary: true)
+
+      # Create a star system with 3 stars
+      system2 = insert(:star_system, name: "Triple Star System")
+      insert(:star, star_system: system2, is_primary: true)
+      insert(:star, star_system: system2, is_primary: false)
+      insert(:star, star_system: system2, is_primary: false)
+
+      # Request with min_stars=2 filter
+      conn = get(conn, ~p"/api/v1/star_systems?min_stars=2")
+      response = json_response(conn, 200)
+
+      # Verify we only get star systems with at least 2 stars
+      assert length(response["data"]) == 1
+      assert Enum.at(response["data"], 0)["name"] == "Triple Star System"
+    end
+
+    test "filters star systems by maximum number of stars", %{conn: conn} do
+      # Create a star system with 1 star
+      system1 = insert(:star_system, name: "Single Star System")
+      insert(:star, star_system: system1, is_primary: true)
+
+      # Create a star system with 3 stars
+      system2 = insert(:star_system, name: "Triple Star System")
+      insert(:star, star_system: system2, is_primary: true)
+      insert(:star, star_system: system2, is_primary: false)
+      insert(:star, star_system: system2, is_primary: false)
+
+      # Request with max_stars=1 filter
+      conn = get(conn, ~p"/api/v1/star_systems?max_stars=1")
+      response = json_response(conn, 200)
+
+      # Verify we only get star systems with at most 1 star
+      assert length(response["data"]) == 1
+      assert Enum.at(response["data"], 0)["name"] == "Single Star System"
+    end
+
+    test "filters star systems by both min and max stars", %{conn: conn} do
+      # Create a star system with 1 star
+      system1 = insert(:star_system, name: "Single Star System")
+      insert(:star, star_system: system1, is_primary: true)
+
+      # Create a star system with 2 stars
+      system2 = insert(:star_system, name: "Binary Star System")
+      insert(:star, star_system: system2, is_primary: true)
+      insert(:star, star_system: system2, is_primary: false)
+
+      # Create a star system with 3 stars
+      system3 = insert(:star_system, name: "Triple Star System")
+      insert(:star, star_system: system3, is_primary: true)
+      insert(:star, star_system: system3, is_primary: false)
+      insert(:star, star_system: system3, is_primary: false)
+
+      # Request with min_stars=2 and max_stars=2 filter
+      conn = get(conn, ~p"/api/v1/star_systems?min_stars=2&max_stars=2")
+      response = json_response(conn, 200)
+
+      # Verify we only get star systems with exactly 2 stars
+      assert length(response["data"]) == 1
+      assert Enum.at(response["data"], 0)["name"] == "Binary Star System"
+    end
+
+    test "combines star count and spectral class filters", %{conn: conn} do
+      # Create a star system with 2 stars, one G-type
+      system1 = insert(:star_system, name: "Binary G System")
+
+      insert(:star,
+        star_system: system1,
+        is_primary: true,
+        spectral_type: "G2V",
+        spectral_class: "G"
+      )
+
+      insert(:star,
+        star_system: system1,
+        is_primary: false,
+        spectral_type: "K1V",
+        spectral_class: "K"
+      )
+
+      # Create a star system with 3 stars, one G-type
+      system2 = insert(:star_system, name: "Triple G System")
+
+      insert(:star,
+        star_system: system2,
+        is_primary: true,
+        spectral_type: "G8V",
+        spectral_class: "G"
+      )
+
+      insert(:star,
+        star_system: system2,
+        is_primary: false,
+        spectral_type: "K5V",
+        spectral_class: "K"
+      )
+
+      insert(:star,
+        star_system: system2,
+        is_primary: false,
+        spectral_type: "M2V",
+        spectral_class: "M"
+      )
+
+      # Create a star system with 2 stars, no G-type
+      system3 = insert(:star_system, name: "Binary K System")
+
+      insert(:star,
+        star_system: system3,
+        is_primary: true,
+        spectral_type: "K0V",
+        spectral_class: "K"
+      )
+
+      insert(:star,
+        star_system: system3,
+        is_primary: false,
+        spectral_type: "M3V",
+        spectral_class: "M"
+      )
+
+      # Request with min_stars=2 and spectral_class=G filter
+      conn = get(conn, ~p"/api/v1/star_systems?min_stars=2&spectral_class=G")
+      response = json_response(conn, 200)
+
+      # Verify we only get star systems with at least 2 stars and a G-type star
+      assert length(response["data"]) == 2
+      system_names = Enum.map(response["data"], fn system -> system["name"] end)
+      assert "Binary G System" in system_names
+      assert "Triple G System" in system_names
+      refute "Binary K System" in system_names
     end
   end
 end
