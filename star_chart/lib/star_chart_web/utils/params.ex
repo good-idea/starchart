@@ -106,11 +106,17 @@ defmodule StarChartWeb.Utils.Params do
     
     if is_binary(value) do
       max_length = Map.get(validation, :max_length)
+      pattern = Map.get(validation, :pattern)
       
-      if is_nil(max_length) or String.length(value) <= max_length do
-        {:ok, {key, value}}
-      else
-        {:error, "must be at most #{max_length} characters long"}
+      cond do
+        not is_nil(max_length) and String.length(value) > max_length ->
+          {:error, "must be at most #{max_length} characters long"}
+          
+        not is_nil(pattern) and value != "" and not Regex.match?(pattern, value) ->
+          {:error, "must match the pattern #{inspect(pattern)}"}
+          
+        true ->
+          {:ok, {key, value}}
       end
     else
       {:error, "must be a string"}

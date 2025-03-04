@@ -135,7 +135,8 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
           distance_parsecs: 4.37,
           apparent_magnitude: -0.27,
           absolute_magnitude: 4.38,
-          spectral_type: "G2V"
+          spectral_type: "G2V",
+          spectral_class: "G"
         )
 
       conn = get(conn, ~p"/api/v1/star_systems/#{star_system.id}")
@@ -171,7 +172,8 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
           distance_parsecs: 4.37,
           apparent_magnitude: -0.27,
           absolute_magnitude: 4.38,
-          spectral_type: "G2V"
+          spectral_type: "G2V",
+          spectral_class: "G"
         )
 
       secondary_star1 =
@@ -183,7 +185,8 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
           distance_parsecs: 4.37,
           apparent_magnitude: 1.33,
           absolute_magnitude: 5.71,
-          spectral_type: "K1V"
+          spectral_type: "K1V",
+          spectral_class: "K"
         )
 
       secondary_star2 =
@@ -195,12 +198,13 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
           distance_parsecs: 4.24,
           apparent_magnitude: 11.05,
           absolute_magnitude: 15.60,
-          spectral_type: "M5.5Ve"
+          spectral_type: "M5.5Ve",
+          spectral_class: "M"
         )
 
       conn = get(conn, ~p"/api/v1/star_systems/#{star_system.id}")
       response = json_response(conn, 200)
-      
+
       star_system_id = star_system.id
       primary_star_id = primary_star.id
       secondary_star1_id = secondary_star1.id
@@ -225,16 +229,16 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
 
       # Verify secondary stars are included
       assert length(secondary_stars) == 2
-      
+
       # Find each secondary star in the response
       found_star1 = Enum.find(secondary_stars, fn star -> star["id"] == secondary_star1_id end)
       found_star2 = Enum.find(secondary_stars, fn star -> star["id"] == secondary_star2_id end)
-      
+
       # Verify first secondary star
       assert found_star1["name"] == "Alpha Centauri B"
       assert found_star1["spectral_type"] == "K1V"
       assert found_star1["spectral_class"] == "K"
-      
+
       # Verify second secondary star
       assert found_star2["name"] == "Proxima Centauri"
       assert found_star2["spectral_type"] == "M5.5Ve"
@@ -245,6 +249,95 @@ defmodule StarChartWeb.API.V1.StarSystemControllerTest do
       assert_error_sent(404, fn ->
         get(conn, ~p"/api/v1/star_systems/999999")
       end)
+    end
+  end
+
+  describe "filtering star systems" do
+    test "filters star systems by spectral class", %{conn: conn} do
+      # Create a star system with G-type primary star (Sun-like)
+      system1 = insert(:star_system, name: "Solar System")
+
+      insert(:star,
+        star_system: system1,
+        name: "Sun",
+        is_primary: true,
+        spectral_type: "G2V",
+        spectral_class: "G"
+      )
+
+      # Create a star system with K-type primary star
+      system2 = insert(:star_system, name: "Alpha Centauri")
+
+      insert(:star,
+        star_system: system2,
+        name: "Alpha Centauri A",
+        is_primary: true,
+        spectral_type: "K1V",
+        spectral_class: "K"
+      )
+
+      # Create a binary system with M-type primary and G-type secondary
+      system3 = insert(:star_system, name: "Binary System")
+
+      insert(:star,
+        star_system: system3,
+        name: "Primary Star",
+        is_primary: true,
+        spectral_type: "M5V",
+        spectral_class: "M"
+      )
+
+      insert(:star,
+        star_system: system3,
+        name: "Secondary Star",
+        is_primary: false,
+        spectral_type: "G8V",
+        spectral_class: "G"
+      )
+
+      # Request with spectral_class=G filter
+      conn = get(conn, ~p"/api/v1/star_systems?spectral_class=G")
+      response = json_response(conn, 200)
+
+      # Verify we only get star systems with G-type stars (system1 and system3)
+      assert length(response["data"]) == 2
+
+      # Check that the returned systems are the ones with G-type stars
+      system_names = Enum.map(response["data"], fn system -> system["name"] end)
+      assert "Solar System" in system_names
+      assert "Binary System" in system_names
+      refute "Alpha Centauri" in system_names
+    end
+
+    test "returns empty list when no star systems match spectral class", %{conn: conn} do
+      # Create a star system with G-type primary star
+      system = insert(:star_system, name: "Solar System")
+
+      insert(:star,
+        star_system: system,
+        name: "Sun",
+        is_primary: true,
+        spectral_type: "G2V"
+      )
+
+      # Request with a spectral class that doesn't exist in our test data
+      conn = get(conn, ~p"/api/v1/star_systems?spectral_class=Y")
+      response = json_response(conn, 200)
+
+      # Verify we get an empty list but proper structure
+      assert response["data"] == []
+      assert response["meta"]["total_entries"] == 0
+      assert response["meta"]["total_pages"] == 0
+    end
+
+    test "returns 400 for invalid spectral class", %{conn: conn} do
+      # Request with invalid spectral class
+      conn = get(conn, ~p"/api/v1/star_systems?spectral_class=X")
+      response = json_response(conn, 400)
+
+      # Verify we get a proper error message
+      assert %{"errors" => %{"detail" => message}} = response
+      assert String.contains?(message, "Invalid parameter 'spectral_class'")
     end
   end
 end

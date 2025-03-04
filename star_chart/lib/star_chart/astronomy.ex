@@ -22,20 +22,38 @@ defmodule StarChart.Astronomy do
 
     * `:page` - The page number (default: 1)
     * `:page_size` - The number of items per page (default: 20)
+    * `:spectral_class` - Filter by spectral class (optional)
 
   ## Examples
 
       iex> list_star_systems_paginated(page: 2, page_size: 10)
       %{entries: [%StarSystem{}, ...], page_number: 2, page_size: 10, total_entries: 50, total_pages: 5}
 
+      iex> list_star_systems_paginated(page: 1, page_size: 10, spectral_class: "G")
+      %{entries: [%StarSystem{}, ...], page_number: 1, page_size: 10, total_entries: 15, total_pages: 2}
+
   """
   def list_star_systems_paginated(opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     page_size = Keyword.get(opts, :page_size, 100)
+    spectral_class = Keyword.get(opts, :spectral_class)
 
+    # Start with the base query
     query = from s in StarSystem
 
-    # Get the total count
+    # Apply spectral class filter if provided
+    query =
+      if spectral_class && spectral_class != "" do
+        # Join with stars table and filter by spectral_class
+        from s in query,
+          join: star in assoc(s, :stars),
+          where: star.spectral_class == ^spectral_class,
+          distinct: true
+      else
+        query
+      end
+
+    # Get the total count with filters applied
     total_count = Repo.aggregate(query, :count, :id)
     
     # Calculate total pages

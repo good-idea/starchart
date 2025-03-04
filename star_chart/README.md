@@ -47,14 +47,16 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 | GET    | `/api/v1/star_systems`     | List all star systems (paginated) |
 | GET    | `/api/v1/star_systems/:id` | Get a specific star system by ID  |
 
-#### Pagination
+#### Pagination and Filtering
 
-The star systems endpoint supports pagination through the following query parameters:
+The star systems endpoint supports pagination and filtering through the following query parameters:
 
 - `page`: The page number to retrieve (default: 1, min: 1)
 - `page_size`: Number of items per page (default: 100, min: 1, max: 200)
+- `spectral_class`: Filter star systems by spectral class (e.g., "G" for Sun-like stars)
+  - Valid values: O, B, A, F, G, K, M, L, T, Y, U (where U represents unknown)
 
-Example: `/api/v1/star_systems?page=2&page_size=50`
+Example: `/api/v1/star_systems?page=2&page_size=50&spectral_class=G`
 
 #### Response Format
 
