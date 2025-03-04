@@ -9,6 +9,8 @@ defmodule StarChartWeb.Router do
     pipe_through :api
 
     scope "/v1", API.V1 do
+      get "/star_systems/:origin_id/nearby", StarSystemController, :nearby
+      
       resources "/star_systems", StarSystemController, only: [:index, :show] do
         resources "/stars", StarController, only: [:index]
       end

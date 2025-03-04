@@ -2,6 +2,7 @@ defmodule StarChartWeb.API.V1.StarSystemController do
   use StarChartWeb, :controller
 
   alias StarChart.Astronomy
+  alias StarChart.Astronomy.Nearby
   alias StarChartWeb.Utils.Params
 
   action_fallback StarChartWeb.FallbackController
@@ -44,5 +45,50 @@ defmodule StarChartWeb.API.V1.StarSystemController do
   def show(conn, %{"id" => id}) do
     star_system = Astronomy.get_star_system!(id)
     render(conn, :show, star_system: star_system)
+  end
+
+  @doc """
+  Lists star systems that are nearby to the specified origin star system.
+
+  ## Parameters
+    - conn: The connection
+    - params: The request parameters
+      * "origin_id": The ID of the origin star system
+      * "max_distance": Maximum distance in light years (optional, default: 25.0)
+
+  ## Returns
+    - JSON response with nearby star systems and their distances
+  """
+  def nearby(conn, %{"origin_id" => origin_id} = params) do
+    # Parse the origin_id to integer
+    with {id, _} <- Integer.parse(origin_id) do
+      # Extract max_distance from params if provided
+      max_distance = case params do
+        %{"max_distance" => distance_str} ->
+          case Float.parse(distance_str) do
+            {distance, _} -> distance
+            :error -> 25.0  # Default if parsing fails
+          end
+        _ -> 25.0  # Default if not provided
+      end
+
+      # Call the Nearby module to find nearby star systems
+      case Nearby.find_nearby_star_systems(id, max_distance: max_distance) do
+        {:error, :not_found} ->
+          conn
+          |> put_status(:not_found)
+          |> put_view(StarChartWeb.ErrorJSON)
+          |> render(:"404")
+
+        nearby_systems ->
+          render(conn, :nearby, nearby_systems: nearby_systems)
+      end
+    else
+      _ ->
+        conn
+        |> put_status(:bad_request)
+        |> put_view(StarChartWeb.ErrorJSON)
+        |> render(:"400", %{detail: "Invalid star system ID"})
+    end
   end
 end

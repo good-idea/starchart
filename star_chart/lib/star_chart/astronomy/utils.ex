@@ -3,6 +3,13 @@ defmodule StarChart.Astronomy.Utils do
   Provides utility functions for astronomical calculations and conversions.
   """
 
+  defmodule Distance do
+    @moduledoc """
+    Struct representing distance between star systems in multiple units.
+    """
+    defstruct [:distance_parsecs, :distance_light_years]
+  end
+
   @parsec_to_ly StarChart.Astronomy.Constants.parsec_to_ly()
 
   @doc """
@@ -91,5 +98,45 @@ defmodule StarChart.Astronomy.Utils do
   @spec degrees_to_hours(number()) :: float()
   def degrees_to_hours(degrees) when is_number(degrees) do
     degrees / 15.0
+  end
+
+  @doc """
+  Calculates the distance between two star systems.
+
+  ## Parameters
+    - system1: The first star system with x, y, z coordinates in its primary_star
+    - system2: The second star system with x, y, z coordinates in its primary_star
+
+  ## Returns
+    - A struct containing:
+      - distance_parsecs: The distance in parsecs as a float
+      - distance_light_years: The distance in light years as a float
+
+  ## Examples
+      iex> system1 = %{primary_star: %{x: 0.0, y: 0.0, z: 0.0}}
+      iex> system2 = %{primary_star: %{x: 3.0, y: 4.0, z: 0.0}}
+      iex> result = StarChart.Astronomy.Utils.calculate_distance_between_systems(system1, system2)
+      iex> result.distance_parsecs
+      5.0
+      iex> result.distance_light_years
+      16.307818887282182
+  """
+  def calculate_distance_between_systems(system1, system2) do
+    # Extract coordinates from primary stars
+    %{primary_star: %{x: x1, y: y1, z: z1}} = system1
+    %{primary_star: %{x: x2, y: y2, z: z2}} = system2
+    
+    # Calculate Euclidean distance
+    dx = x2 - x1
+    dy = y2 - y1
+    dz = z2 - z1
+    
+    distance_parsecs = :math.sqrt(dx * dx + dy * dy + dz * dz)
+    distance_light_years = parsec_to_light_years(distance_parsecs)
+    
+    %Distance{
+      distance_parsecs: distance_parsecs,
+      distance_light_years: distance_light_years
+    }
   end
 end

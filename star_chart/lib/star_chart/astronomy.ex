@@ -212,9 +212,12 @@ defmodule StarChart.Astronomy do
     Repo.delete(star)
   end
 
-  # Helper function to preload only primary star (for index)
-  defp preload_primary_star(nil), do: nil
-  defp preload_primary_star(star_system) do
+
+  @doc """
+  Preloads the primary star for a star system.
+  """
+  def preload_primary_star(nil), do: nil
+  def preload_primary_star(star_system) do
     # Preload all stars to find the primary
     star_system = Repo.preload(star_system, :stars)
     
