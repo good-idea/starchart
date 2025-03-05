@@ -6,25 +6,32 @@
   "license": "MIT",
   "private": true,
   "workspaces": [
-    "types"
+    "types",
+    "client"
   ],
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build:client": "cd client && yarn build",
+    "test": "jest"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
     "@eslint/js": "^9.21.0",
+    "@types/jest": "^29.5.10",
     "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^8.25.0",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-prettier": "^5.2.3",
     "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.4.3",
     "prettier": "^3.5.2",
+    "ts-jest": "^29.1.1",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.26.0"
   },
