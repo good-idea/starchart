@@ -154,7 +154,7 @@ export type PaginationMeta = {
 /**
  * Response format for listing star systems
  */
-export type StarSystemListResponse = {
+export type StarSystemsListResponse = {
   /** Array of star systems */
   data: StarSystem[]
   /** Pagination metadata */
@@ -206,7 +206,7 @@ export type ErrorResponse = {
 
 // API Request Parameter Types
 
-export type StarSystemListParams = {
+export type StarSystemsListParams = {
   /** The page number to retrieve (default: 1, min: 1) */
   page?: number
   /** Number of items per page (default: 100, min: 1, max: 200) */
@@ -219,7 +219,7 @@ export type StarSystemListParams = {
   max_stars?: number
 }
 
-export type NearbyStarSystemsParams = StarSystemListParams & {
+export type NearbyStarSystemsParams = StarSystemsListParams & {
   /** Maximum distance in light years (default: 25.0, min: 0.1, max: 100) */
   distance?: number
 }
