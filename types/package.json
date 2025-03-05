@@ -1,0 +1,8 @@
+{
+  "name": "@starchart/types",
+  "version": "0.0.1",
+  "description": "Typescript types for StarChart",
+  "main": "src/index.ts",
+  "author": "Joseph",
+  "license": "MIT"
+}
