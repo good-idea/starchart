@@ -18,13 +18,13 @@ export type StarChartClient = ReturnType<typeof createClient>
 
 type AnyParams = Record<string, string | number>
 
-type UnexpectedErrorResponse = { status: number; errorMessage: string }
-
 type APIRequest<Result, Params extends AnyParams | undefined> = (
   params: Params,
 ) => Promise<ApiResult<Result>>
 
-type ApiResult<T> = T | ErrorResponse | UnexpectedErrorResponse
+type ApiResult<T> =
+  | { success: true; result: T }
+  | ({ success: false } & ErrorResponse)
 
 /**
  * Creates a client for the Star Chart API
@@ -33,7 +33,7 @@ type ApiResult<T> = T | ErrorResponse | UnexpectedErrorResponse
  * @returns A client object with methods for accessing the API
  */
 export const createClient = (options: ClientOptions = {}) => {
-  const cache = new Map<string, { data: any }>()
+  const cache = new Map<string, { success: true; result: any }>()
   const baseURL = options.baseURL || 'http://localhost:4000/api'
   const version = options.version || 'v1'
   const defaultFetchOptions: RequestInit = {
@@ -51,31 +51,30 @@ export const createClient = (options: ClientOptions = {}) => {
     const queryString = params ? formatQueryParams(params) : ''
     const url = `${baseURL}/${version}${endpoint}${queryString}`
     const cached = cache.get(url)
-    if (cached) return cached.data
+    if (cached) return cached
 
     const response = await fetch(url, defaultFetchOptions)
+
+    // Handle error responses
     if (!response.ok) {
-      /* Handle unexpected errors */
-      const errorMessage = await response.text()
-      return {
-        status: response.status,
-        errorMessage: `API error (${response.status}): ${errorMessage}`,
-      }
-    }
-    if (response.status !== 200) {
-      /* Handle formatted API errors (i.e. invalid params) */
-      const errorDetails = await response.json()
-      return {
-        status: response.status,
-        ...errorDetails,
+      const contentType = response.headers.get('content-type')
+
+      if (contentType && contentType.includes('application/json')) {
+        const errorResponse = (await response.json()) as ErrorResponse
+        return {
+          success: false,
+          ...errorResponse,
+        }
+      } else {
+        throw new Error(`Error ${response.status}: ${response.statusText}`)
       }
     }
 
-    const result = await response.json()
+    const result: T = await response.json()
 
-    const value = { data: result, status: response.status }
+    const value = { success: true as const, result }
     cache.set(url, value)
-    return result
+    return value
   }
 
   const starSystems: APIRequest<

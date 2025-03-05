@@ -18,15 +18,24 @@ import { createClient } from '@starchart/client'
 // Create a client instance
 const client = createClient({
   baseURL: 'http://localhost:4000/api', // default
-  version: 'v1' // default
+  version: 'v1', // default
 })
 
 // Get a list of star systems
-const starSystems = await client.starSystems({
+const response = await client.starSystems({
   page: 1,
   page_size: 10,
   spectral_class: 'G',
 })
+
+if (response.success) {
+  // Handle successful response
+  const starSystems = response.result
+  console.log(`Found ${starSystems.data.length} star systems`)
+} else {
+  // Handle error response
+  console.error('Error:', response.errors)
+}
 ```
 
 ## API Reference
@@ -57,4 +66,34 @@ Get a paginated list of star systems.
 - `min_stars`: Filter for star systems with at least this many stars
 - `max_stars`: Filter for star systems with at most this many stars
 
-**Returns:** Promise resolving to `StarSystemsListResponse`
+**Returns:** Promise resolving to either:
+
+- `{ success: true, result: StarSystemsListResponse }` for successful requests
+- `{ success: false, errors: { ... } }` for 400 Bad Request errors
+
+## Error Handling
+
+The client provides type-safe error handling:
+
+- For 400 Bad Request errors (validation errors, invalid parameters, etc.), the promise will resolve with `{ success: false, error: { message: string, details: string[] } }`.
+- All other request errors (network issues, 500 server errors, etc.) will throw an exception.
+
+Example error handling:
+
+```typescript
+try {
+  const response = await client.starSystems({ spectral_class: 'invalid' })
+
+  if (!response.success) {
+    // Handle 400 Bad Request errors
+    console.error('Validation error:', response.errors)
+    return
+  }
+
+  // Process successful response
+  const starSystems = response.result
+} catch (error) {
+  // Handle network errors, 500 errors, etc.
+  console.error('Request failed:', error)
+}
+```
