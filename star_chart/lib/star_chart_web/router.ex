@@ -11,10 +11,7 @@ defmodule StarChartWeb.Router do
     scope "/v1", API.V1 do
       get "/star_systems/:origin_id/nearby", StarSystemController, :nearby
       
-      resources "/star_systems", StarSystemController, only: [:index, :show] do
-        resources "/stars", StarController, only: [:index]
-      end
-
+      resources "/star_systems", StarSystemController, only: [:index, :show]
       resources "/stars", StarController, only: [:show]
     end
   end
