@@ -3,6 +3,7 @@ import {
   StarSystemsListParams,
   StarSystemsListResponse,
   StarSystem,
+  Star,
   ErrorResponse,
 } from '@starchart/types'
 
@@ -78,7 +79,18 @@ export const createClient = (options: ClientOptions = {}) => {
     return value
   }
 
-  const starSystems: APIRequest<
+  /**
+   * Get a paginated list of star systems with optional filtering
+   * 
+   * @param params - Query parameters for filtering and pagination
+   * @param params.page - The page number to retrieve (default: 1, min: 1)
+   * @param params.page_size - Number of items per page (default: 100, min: 1, max: 200)
+   * @param params.spectral_class - Filter star systems by spectral class (e.g., "G" for Sun-like stars)
+   * @param params.min_stars - Filter for star systems with at least this many stars
+   * @param params.max_stars - Filter for star systems with at most this many stars
+   * @returns Promise resolving to either a successful response with paginated star systems or an error
+   */
+  const getStarSystems: APIRequest<
     StarSystemsListResponse,
     StarSystemsListParams
   > = (params) => makeRequest('/star_systems', params)
@@ -95,8 +107,19 @@ export const createClient = (options: ClientOptions = {}) => {
     return makeRequest(`/star_systems/${id}`)
   }
 
+  /**
+   * Get a specific star by ID
+   *
+   * @param id - The ID of the star to retrieve
+   * @returns Promise resolving to either a successful response with the star or an error
+   */
+  const getStar = (id: number | string): Promise<ApiResult<Star>> => {
+    return makeRequest(`/stars/${id}`)
+  }
+
   return {
-    starSystems,
+    getStarSystems,
     getStarSystem,
+    getStar,
   }
 }

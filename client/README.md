@@ -84,6 +84,19 @@ Get a specific star system by ID.
 - `{ success: true, result: {  StarSystem } }` for successful requests
 - `{ success: false, errors: { ... } }` for 400 Bad Request errors
 
+#### `client.getStar(id: number | string)`
+
+Get a specific star by ID.
+
+**Parameters:**
+
+- `id`: The ID of the star to retrieve
+
+**Returns:** Promise resolving to either:
+
+- `{ success: true, result: {  Star } }` for successful requests
+- `{ success: false, errors: { ... } }` for 400 Bad Request errors
+
 ## Error Handling
 
 The client provides type-safe error handling:
