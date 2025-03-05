@@ -1,6 +1,10 @@
 # config stuff
 .vscode
 
+# Local notes
+TODO.md
+OBJECTIVES.md
+
 node_modules
 .DS_Store
 *.log
