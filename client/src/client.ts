@@ -2,6 +2,7 @@ import fetch from 'cross-fetch'
 import {
   StarSystemsListParams,
   StarSystemsListResponse,
+  StarSystem,
   ErrorResponse,
 } from '@starchart/types'
 
@@ -82,7 +83,20 @@ export const createClient = (options: ClientOptions = {}) => {
     StarSystemsListParams
   > = (params) => makeRequest('/star_systems', params)
 
+  /**
+   * Get a specific star system by ID
+   *
+   * @param id - The ID of the star system to retrieve
+   * @returns Promise resolving to either a successful response with the star system or an error
+   */
+  const getStarSystem = (
+    id: number | string,
+  ): Promise<ApiResult<StarSystem>> => {
+    return makeRequest(`/star_systems/${id}`)
+  }
+
   return {
     starSystems,
+    getStarSystem,
   }
 }

@@ -71,6 +71,19 @@ Get a paginated list of star systems.
 - `{ success: true, result: StarSystemsListResponse }` for successful requests
 - `{ success: false, errors: { ... } }` for 400 Bad Request errors
 
+#### `client.getStarSystem(id: number | string)`
+
+Get a specific star system by ID.
+
+**Parameters:**
+
+- `id`: The ID of the star system to retrieve
+
+**Returns:** Promise resolving to either:
+
+- `{ success: true, result: {  StarSystem } }` for successful requests
+- `{ success: false, errors: { ... } }` for 400 Bad Request errors
+
 ## Error Handling
 
 The client provides type-safe error handling:
