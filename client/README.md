@@ -97,6 +97,47 @@ Get a specific star by ID.
 - `{ success: true, result: {  Star } }` for successful requests
 - `{ success: false, errors: { ... } }` for 400 Bad Request errors
 
+#### `client.getNearbyStarSystems(originId: number | string, params?: NearbyStarSystemsParams)`
+
+Get star systems near a specific origin star system.
+
+**Parameters:**
+
+- `originId`: The ID of the origin star system
+- `params`: Optional query parameters
+  - `distance`: Maximum distance in light years (default: 25.0, min: 0.1, max: 100)
+  - `page`: The page number to retrieve (default: 1, min: 1)
+  - `page_size`: Number of items per page (default: 100, min: 1, max: 200)
+  - `spectral_class`: Filter by spectral class (optional)
+  - `min_stars`: Filter for star systems with at least this many stars (optional, min: 1)
+  - `max_stars`: Filter for star systems with at most this many stars (optional, min: 1)
+
+**Returns:** Promise resolving to either:
+
+- `{ success: true, result: NearbyStarSystemsResponse }` for successful requests
+- `{ success: false, errors: { ... } }` for 400 Bad Request errors
+
+Example:
+
+```typescript
+// Get all star systems within 10 light years of star system with ID 1
+const response = await client.getNearbyStarSystems(1, { 
+  distance: 10,
+  spectral_class: 'G'
+});
+
+if (response.success) {
+  const nearbySystems = response.result.data;
+  console.log(`Found ${nearbySystems.length} nearby star systems`);
+  
+  // Access the first nearby system and its distance
+  if (nearbySystems.length > 0) {
+    const firstSystem = nearbySystems[0];
+    console.log(`${firstSystem.system.name} is ${firstSystem.distance.light_years} light years away`);
+  }
+}
+```
+
 ## Error Handling
 
 The client provides type-safe error handling:

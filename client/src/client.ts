@@ -5,6 +5,8 @@ import {
   StarSystem,
   Star,
   ErrorResponse,
+  NearbyStarSystemsParams,
+  NearbyStarSystemsResponse,
 } from '@starchart/types'
 
 import { formatQueryParams } from './utils/request'
@@ -80,8 +82,20 @@ export const createClient = (options: ClientOptions = {}) => {
   }
 
   /**
+   * Get a specific star system by ID
+   *
+   * @param id - The ID of the star system to retrieve
+   * @returns Promise resolving to either a successful response with the star system or an error
+   */
+  const getStarSystem = (
+    id: number | string,
+  ): Promise<ApiResult<StarSystem>> => {
+    return makeRequest(`/star_systems/${id}`)
+  }
+
+  /**
    * Get a paginated list of star systems with optional filtering
-   * 
+   *
    * @param params - Query parameters for filtering and pagination
    * @param params.page - The page number to retrieve (default: 1, min: 1)
    * @param params.page_size - Number of items per page (default: 100, min: 1, max: 200)
@@ -96,15 +110,23 @@ export const createClient = (options: ClientOptions = {}) => {
   > = (params) => makeRequest('/star_systems', params)
 
   /**
-   * Get a specific star system by ID
+   * Get star systems near a specific origin star system
    *
-   * @param id - The ID of the star system to retrieve
-   * @returns Promise resolving to either a successful response with the star system or an error
+   * @param originId - The ID of the origin star system
+   * @param params - Query parameters for filtering and pagination
+   * @param params.distance - Maximum distance in light years (default: 25.0, min: 0.1, max: 100)
+   * @param params.page - The page number to retrieve (default: 1, min: 1)
+   * @param params.page_size - Number of items per page (default: 100, min: 1, max: 200)
+   * @param params.spectral_class - Filter by spectral class (optional)
+   * @param params.min_stars - Filter for star systems with at least this many stars (optional, min: 1)
+   * @param params.max_stars - Filter for star systems with at most this many stars (optional, min: 1)
+   * @returns Promise resolving to either a successful response with nearby star systems or an error
    */
-  const getStarSystem = (
-    id: number | string,
-  ): Promise<ApiResult<StarSystem>> => {
-    return makeRequest(`/star_systems/${id}`)
+  const getNearbyStarSystems = (
+    originId: number | string,
+    params?: NearbyStarSystemsParams,
+  ): Promise<ApiResult<NearbyStarSystemsResponse>> => {
+    return makeRequest(`/star_systems/${originId}/nearby`, params)
   }
 
   /**
@@ -121,5 +143,6 @@ export const createClient = (options: ClientOptions = {}) => {
     getStarSystems,
     getStarSystem,
     getStar,
+    getNearbyStarSystems,
   }
 }
