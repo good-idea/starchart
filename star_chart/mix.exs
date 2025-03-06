@@ -42,6 +42,7 @@ defmodule StarChart.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:csv, "~> 3.0"},
+      {:cors_plug, "~> 3.0"},
       # Test dependencies
       {:ex_machina, "~> 2.7", only: :test},
       {:excoveralls, "~> 0.18", only: :test}
