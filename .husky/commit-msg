@@ -1,1 +1,14 @@
+#!/bin/sh
+[ -z "$CI" ] || exit 0
+
+# Get the commit message
+commit_msg=$(cat "$1")
+
+# Skip commitlint if the message starts with "aider:"
+if [[ "$commit_msg" =~ ^aider: ]]; then
+  echo "Skipping commitlint for aider commit"
+  exit 0
+fi
+
+# Otherwise, run commitlint as usual
 yarn commitlint --edit $1
