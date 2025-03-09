@@ -15,7 +15,7 @@ export const selectAllCachedStarSystems = createSelector(
   (queries) => {
     // Create a map to deduplicate star systems by ID
     const starSystemsMap = new Map<number, StarSystem>()
-    
+
     // Iterate through all cached queries
     Object.values(queries).forEach((query: any) => {
       // Check if this is a getStarSystems query with data
@@ -26,10 +26,10 @@ export const selectAllCachedStarSystems = createSelector(
         })
       }
     })
-    
+
     // Convert the map values back to an array
     return Array.from(starSystemsMap.values())
-  }
+  },
 )
 
 /**
@@ -41,9 +41,9 @@ export const selectTotalStarSystemsCount = createSelector(
   (queries) => {
     // Find the first getStarSystems query with data
     const starSystemsQuery = Object.values(queries).find(
-      (query: any) => query?.endpointName === 'getStarSystems' && query?.data
+      (query: any) => query?.endpointName === 'getStarSystems' && query?.data,
     ) as any
-    
+
     return starSystemsQuery?.data?.meta?.total_entries ?? 0
-  }
+  },
 )

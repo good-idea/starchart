@@ -9,7 +9,7 @@ import {
 } from '@/store/selectors'
 
 interface UseAllStarSystemsResult {
-  loading: boolean
+  isLoading: boolean
   totalSystems: number
   starSystems: StarSystem[]
 }
@@ -20,28 +20,32 @@ interface UseAllStarSystemsResult {
  */
 export function useAllStarSystems(): UseAllStarSystemsResult {
   const [currentPage, setCurrentPage] = useState(1)
+  const [isLoading, setIsLoading] = useState(true)
 
   const starSystems = useAppSelector(selectAllCachedStarSystems)
   const totalSystems = useAppSelector(selectTotalStarSystemsCount)
 
-  const { data, isFetching } = useGetStarSystemsQuery({
+  const { data } = useGetStarSystemsQuery({
     page: currentPage,
     page_size: 100,
   })
 
-  // const { page, total_pages } = data.data.meta
+  const totalPages = data?.meta?.total_pages
+  const fetchedPage = data?.meta?.page
 
   useEffect(() => {
     if (data) {
       const { page, total_pages } = data.meta
-      if (page < 3) {
+      if (page < total_pages) {
         setCurrentPage(page + 1)
+      } else {
+        setIsLoading(false)
       }
     }
-  }, [data])
+  }, [totalPages, fetchedPage])
 
   return {
-    loading: isFetching,
+    isLoading,
     totalSystems,
     starSystems,
   }
