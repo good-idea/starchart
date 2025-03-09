@@ -1,32 +1,27 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { 
-  StarSystemsListResponse, 
+import {
+  StarSystemsListResponse,
   StarSystemsListParams,
   StarSystemResponse,
   NearbyStarSystemsResponse,
   NearbyStarSystemsParams,
-  StarResponse
+  StarResponse,
 } from '@starchart/types'
+import { createQueryString } from '../utils/params'
 
 // Define the API slice
 export const starSystemsApi = createApi({
   reducerPath: 'starSystemsApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:4000/api/v1/' }),
   endpoints: (builder) => ({
-    getStarSystems: builder.query<StarSystemsListResponse, StarSystemsListParams | void>({
+    getStarSystems: builder.query<
+      StarSystemsListResponse,
+      StarSystemsListParams | void
+    >({
       query: (params = {}) => {
-        // Convert params object to URL query parameters
-        const queryParams = new URLSearchParams()
-        
-        if (params.page) queryParams.append('page', params.page.toString())
-        if (params.page_size) queryParams.append('page_size', params.page_size.toString())
-        if (params.spectral_class) queryParams.append('spectral_class', params.spectral_class)
-        if (params.min_stars) queryParams.append('min_stars', params.min_stars.toString())
-        if (params.max_stars) queryParams.append('max_stars', params.max_stars.toString())
-        
-        const queryString = queryParams.toString()
+        const queryString = createQueryString(params)
         return {
-          url: `star_systems${queryString ? `?${queryString}` : ''}`,
+          url: `star_systems${queryString}`,
         }
       },
     }),
@@ -37,22 +32,13 @@ export const starSystemsApi = createApi({
       query: (id) => `stars/${id}`,
     }),
     getNearbyStarSystems: builder.query<
-      NearbyStarSystemsResponse, 
+      NearbyStarSystemsResponse,
       { originId: number | string; params?: NearbyStarSystemsParams }
     >({
       query: ({ originId, params = {} }) => {
-        const queryParams = new URLSearchParams()
-        
-        if (params.distance) queryParams.append('distance', params.distance.toString())
-        if (params.page) queryParams.append('page', params.page.toString())
-        if (params.page_size) queryParams.append('page_size', params.page_size.toString())
-        if (params.spectral_class) queryParams.append('spectral_class', params.spectral_class)
-        if (params.min_stars) queryParams.append('min_stars', params.min_stars.toString())
-        if (params.max_stars) queryParams.append('max_stars', params.max_stars.toString())
-        
-        const queryString = queryParams.toString()
+        const queryString = createQueryString(params)
         return {
-          url: `star_systems/${originId}/nearby${queryString ? `?${queryString}` : ''}`,
+          url: `star_systems/${originId}/nearby${queryString}`,
         }
       },
     }),
@@ -60,9 +46,9 @@ export const starSystemsApi = createApi({
 })
 
 // Export the auto-generated hooks
-export const { 
-  useGetStarSystemsQuery, 
+export const {
+  useGetStarSystemsQuery,
   useGetStarSystemQuery,
   useGetStarQuery,
-  useGetNearbyStarSystemsQuery
+  useGetNearbyStarSystemsQuery,
 } = starSystemsApi
