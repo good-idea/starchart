@@ -1,6 +1,6 @@
-defmodule MyAppWeb.ApiSpec do
+defmodule StarChartWeb.ApiSpec do
   alias OpenApiSpex.{Info, OpenApi, Paths, Server}
-  alias MyAppWeb.{Endpoint, Router}
+  alias StarChartWeb.{Endpoint, Router}
   @behaviour OpenApi
 
   @impl OpenApi

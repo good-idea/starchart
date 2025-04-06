@@ -3,7 +3,7 @@ defmodule StarChartWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-    plug OpenApiSpex.Plug.PutApiSpec, module: MyAppWeb.ApiSpec
+    plug OpenApiSpex.Plug.PutApiSpec, module: StarChartWeb.ApiSpec
   end
 
   scope "/api" do
