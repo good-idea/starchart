@@ -4,6 +4,30 @@ defmodule StarChartWeb.Schema do
   """
 
   # --------------------------------------------------------------------
+  # Shared parameters
+  # --------------------------------------------------------------------
+  defmodule Parameters do
+    def spectral_class do
+      %OpenApiSpex.Schema{
+        enum: [
+          "O",
+          "B",
+          "A",
+          "F",
+          "G",
+          "K",
+          "M",
+          "L",
+          "T",
+          "Y",
+          "U"
+        ],
+        type: :string
+      }
+    end
+  end
+
+  # --------------------------------------------------------------------
   # Schema for a Star
   # --------------------------------------------------------------------
   defmodule Star do
@@ -165,6 +189,188 @@ defmodule StarChartWeb.Schema do
       type: :object,
       properties: %{
         data: Star
+      },
+      required: ["data"]
+    })
+  end
+
+  # --------------------------------------------------------------------
+  # Schema for the GET /star_systems Request
+  # --------------------------------------------------------------------
+  defmodule ListStarSystemsRequest do
+    @moduledoc "Query parameters for GET /star_systems."
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "ListStarSystemsRequest",
+      description: "Query parameters for listing star systems",
+      type: :object,
+      properties: %{
+        page: %Schema{type: :integer, description: "Page number", default: 1, minimum: 1},
+        page_size: %Schema{
+          type: :integer,
+          description: "Number of items per page",
+          default: 100,
+          minimum: 1,
+          maximum: 200
+        },
+        spectral_class: %Schema{
+          type: :string,
+          description: "Filter by spectral class",
+          pattern: "^[OBAFGKMLTY]$|^U$"
+        },
+        min_stars: %Schema{type: :integer, description: "Minimum number of stars", minimum: 1},
+        max_stars: %Schema{type: :integer, description: "Maximum number of stars", minimum: 1}
+      }
+    })
+  end
+
+  # --------------------------------------------------------------------
+  # Schema for the GET /star_systems Response
+  # --------------------------------------------------------------------
+  defmodule ListStarSystemsResponse do
+    @moduledoc "Response schema for GET /star_systems."
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "ListStarSystemsResponse",
+      description: "Response containing a list of star systems along with pagination metadata",
+      type: :object,
+      properties: %{
+        data: %Schema{
+          type: :array,
+          description: "List of star systems",
+          items: %Schema{
+            type: :object,
+            properties: %{
+              id: %Schema{type: :integer, description: "Unique identifier for the star system"},
+              name: %Schema{type: :string, description: "Name of the star system"},
+              star_count: %Schema{
+                type: :integer,
+                description: "Total number of stars in the system"
+              },
+              primary_star: %Schema{
+                type: :object,
+                description: "The primary star of the system",
+                properties: %{
+                  id: %Schema{
+                    type: :integer,
+                    description: "Unique identifier for the primary star"
+                  },
+                  name: %Schema{type: :string, description: "Name of the primary star"}
+                },
+                required: ["id", "name"]
+              },
+              secondary_stars: %Schema{
+                type: :array,
+                description: "List of secondary stars in the system",
+                items: %Schema{
+                  type: :object,
+                  properties: %{
+                    id: %Schema{
+                      type: :integer,
+                      description: "Unique identifier for the secondary star"
+                    },
+                    name: %Schema{type: :string, description: "Name of the secondary star"}
+                  },
+                  required: ["id", "name"]
+                }
+              }
+            },
+            required: ["id", "name"]
+          }
+        },
+        meta: %Schema{
+          type: :object,
+          description: "Pagination metadata for the results",
+          properties: %{
+            page: %Schema{type: :integer, description: "Current page number"},
+            page_size: %Schema{type: :integer, description: "Number of items per page"},
+            total_entries: %Schema{type: :integer, description: "Total number of star systems"},
+            total_pages: %Schema{type: :integer, description: "Total number of pages available"}
+          },
+          required: ["page", "page_size", "total_entries", "total_pages"]
+        }
+      },
+      required: ["data", "meta"]
+    })
+  end
+
+  # --------------------------------------------------------------------
+  # Schema for the GET /star_systems/:id Request
+  # --------------------------------------------------------------------
+  defmodule GetStarSystemRequest do
+    @moduledoc "Request parameters for GET /star_systems/:id."
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "GetStarSystemRequest",
+      description: "Path parameters for retrieving a star system",
+      type: :object,
+      properties: %{
+        id: %Schema{type: :integer, description: "Unique identifier for the star system"}
+      },
+      required: ["id"]
+    })
+  end
+
+  # --------------------------------------------------------------------
+  # Schema for the GET /star_systems/:id Response
+  # --------------------------------------------------------------------
+  defmodule GetStarSystemResponse do
+    @moduledoc "Response schema for GET /star_systems/:id."
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "GetStarSystemResponse",
+      description: "Response containing a star system",
+      type: :object,
+      properties: %{
+        data: %Schema{
+          title: "StarSystem",
+          description: "A star system object",
+          type: :object,
+          properties: %{
+            id: %Schema{type: :integer, description: "Unique identifier for the star system"},
+            name: %Schema{type: :string, description: "Name of the star system"},
+            star_count: %Schema{
+              type: :integer,
+              description: "Total number of stars in the system"
+            },
+            primary_star: %Schema{
+              title: "PrimaryStar",
+              description: "The primary star of the system",
+              type: :object,
+              properties: %{
+                id: %Schema{type: :integer, description: "Unique identifier for the primary star"},
+                name: %Schema{type: :string, description: "Name of the primary star"}
+              },
+              required: ["id", "name"]
+            },
+            secondary_stars: %Schema{
+              type: :array,
+              description: "List of secondary stars in the system",
+              items: %Schema{
+                title: "SecondaryStar",
+                description: "A secondary star in the system",
+                type: :object,
+                properties: %{
+                  id: %Schema{
+                    type: :integer,
+                    description: "Unique identifier for the secondary star"
+                  },
+                  name: %Schema{type: :string, description: "Name of the secondary star"}
+                },
+                required: ["id", "name"]
+              }
+            }
+          },
+          required: ["id", "name"]
+        }
       },
       required: ["data"]
     })

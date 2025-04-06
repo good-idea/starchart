@@ -17,7 +17,7 @@ defmodule StarChartWeb.API.V1.StarController do
     ],
     responses: [
       ok: {"Star", "application/json", StarChartWeb.Schema.GetStarResponse}
-      # TODO: Add NotFound schema
+      # TODO: Add NotFound schema:
       # not_found: {"Not Found", "application/json", %{}}
     ]
 
