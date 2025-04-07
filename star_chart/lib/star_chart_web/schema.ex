@@ -156,6 +156,37 @@ defmodule StarChartWeb.Schema do
   end
 
   # --------------------------------------------------------------------
+  # Schema for a Star System
+  # --------------------------------------------------------------------
+
+  defmodule StarSystem do
+    @moduledoc "Represents a Star System"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "Star System",
+      description: "A star system",
+      type: :object,
+      properties: %{
+        id: %Schema{type: :integer, description: "Unique identifier for the star system"},
+        name: %Schema{type: :string, description: "Name of the star system"},
+        star_count: %Schema{
+          type: :integer,
+          description: "Total number of stars in the system"
+        },
+        primary_star: Star,
+        secondary_stars: %Schema{
+          type: :array,
+          description: "List of secondary stars in the system",
+          items: Star
+        }
+      },
+      required: ["id", "name"]
+    })
+  end
+
+  # --------------------------------------------------------------------
   # Schema for the GET /stars/:id Request
   # --------------------------------------------------------------------
   defmodule GetStarRequest do
@@ -251,32 +282,11 @@ defmodule StarChartWeb.Schema do
                 type: :integer,
                 description: "Total number of stars in the system"
               },
-              primary_star: %Schema{
-                type: :object,
-                description: "The primary star of the system",
-                properties: %{
-                  id: %Schema{
-                    type: :integer,
-                    description: "Unique identifier for the primary star"
-                  },
-                  name: %Schema{type: :string, description: "Name of the primary star"}
-                },
-                required: ["id", "name"]
-              },
+              primary_star: Star,
               secondary_stars: %Schema{
                 type: :array,
                 description: "List of secondary stars in the system",
-                items: %Schema{
-                  type: :object,
-                  properties: %{
-                    id: %Schema{
-                      type: :integer,
-                      description: "Unique identifier for the secondary star"
-                    },
-                    name: %Schema{type: :string, description: "Name of the secondary star"}
-                  },
-                  required: ["id", "name"]
-                }
+                items: Star
               }
             },
             required: ["id", "name"]
@@ -330,49 +340,140 @@ defmodule StarChartWeb.Schema do
       description: "Response containing a star system",
       type: :object,
       properties: %{
+        data: StarSystem
+      },
+      required: ["data"]
+    })
+  end
+
+  # --------------------------------------------------------------------
+  # Schema for the GET /star_systems/:origin_id/nearby Request
+  # --------------------------------------------------------------------
+  defmodule NearbyStarSystemsRequest do
+    @moduledoc "Request parameters for GET /star_systems/:origin_id/nearby."
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "NearbyStarSystemsRequest",
+      description: "Path and query parameters for retrieving nearby star systems",
+      type: :object,
+      properties: %{
+        origin_id: %Schema{
+          type: :integer,
+          description: "Origin star system ID"
+        },
+        distance: %Schema{
+          type: :number,
+          format: :float,
+          description: "Maximum distance in light years",
+          default: 25.0,
+          minimum: 0.1,
+          maximum: 100.0
+        },
+        page: %Schema{
+          type: :integer,
+          description: "Page number",
+          default: 1,
+          minimum: 1
+        },
+        page_size: %Schema{
+          type: :integer,
+          description: "Number of items per page",
+          default: 100,
+          minimum: 1,
+          maximum: 200
+        },
+        spectral_class: %Schema{
+          type: :string,
+          description: "Filter by spectral class",
+          enum: ["O", "B", "A", "F", "G", "K", "M", "L", "T", "Y", "U"]
+        },
+        min_stars: %Schema{
+          type: :integer,
+          description: "Minimum number of stars",
+          minimum: 1
+        },
+        max_stars: %Schema{
+          type: :integer,
+          description: "Maximum number of stars",
+          minimum: 1
+        }
+      },
+      required: ["origin_id"]
+    })
+  end
+
+  # --------------------------------------------------------------------
+  # Schema for the GET /star_systems/:origin_id/nearby Response
+  # --------------------------------------------------------------------
+  defmodule NearbyStarSystemsResponse do
+    @moduledoc "Response schema for GET /star_systems/:origin_id/nearby."
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "NearbyStarSystemsResponse",
+      description: "Response containing a list of nearby star systems with distance information.",
+      type: :object,
+      properties: %{
         data: %Schema{
-          title: "StarSystem",
-          description: "A star system object",
-          type: :object,
-          properties: %{
-            id: %Schema{type: :integer, description: "Unique identifier for the star system"},
-            name: %Schema{type: :string, description: "Name of the star system"},
-            star_count: %Schema{
-              type: :integer,
-              description: "Total number of stars in the system"
-            },
-            primary_star: %Schema{
-              title: "PrimaryStar",
-              description: "The primary star of the system",
-              type: :object,
-              properties: %{
-                id: %Schema{type: :integer, description: "Unique identifier for the primary star"},
-                name: %Schema{type: :string, description: "Name of the primary star"}
-              },
-              required: ["id", "name"]
-            },
-            secondary_stars: %Schema{
-              type: :array,
-              description: "List of secondary stars in the system",
-              items: %Schema{
-                title: "SecondaryStar",
-                description: "A secondary star in the system",
+          type: :array,
+          description: "List of nearby star systems with distance information",
+          items: %Schema{
+            type: :object,
+            properties: %{
+              system: %Schema{
+                title: "StarSystem",
+                description: "A star system object",
                 type: :object,
                 properties: %{
                   id: %Schema{
                     type: :integer,
-                    description: "Unique identifier for the secondary star"
+                    description: "Unique identifier for the star system"
                   },
-                  name: %Schema{type: :string, description: "Name of the secondary star"}
+                  name: %Schema{type: :string, description: "Name of the star system"},
+                  star_count: %Schema{
+                    type: :integer,
+                    description: "Total number of stars in the system"
+                  }
                 },
                 required: ["id", "name"]
+              },
+              distance: %Schema{
+                type: :object,
+                description: "Distance information",
+                properties: %{
+                  parsecs: %Schema{
+                    type: :number,
+                    format: :float,
+                    description: "Distance in parsecs"
+                  },
+                  light_years: %Schema{
+                    type: :number,
+                    format: :float,
+                    description: "Distance in light years"
+                  }
+                },
+                required: ["parsecs", "light_years"]
               }
-            }
+            },
+            required: ["system", "distance"]
+          }
+        },
+        meta: %Schema{
+          type: :object,
+          description: "Pagination metadata for the results",
+          properties: %{
+            page: %Schema{type: :integer, description: "Current page number"},
+            page_size: %Schema{type: :integer, description: "Number of items per page"},
+            total_entries: %Schema{type: :integer, description: "Total number of star systems"},
+            total_pages: %Schema{type: :integer, description: "Total number of pages available"}
           },
-          required: ["id", "name"]
+          required: ["page", "page_size", "total_entries", "total_pages"]
         }
       },
-      required: ["data"]
+      required: ["data", "meta"]
     })
   end
 end

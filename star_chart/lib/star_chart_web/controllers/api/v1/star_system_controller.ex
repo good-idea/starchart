@@ -89,24 +89,49 @@ defmodule StarChartWeb.API.V1.StarSystemController do
     render(conn, :show, star_system: star_system)
   end
 
-  @doc """
-  Lists star systems that are nearby to the specified origin star system.
+  operation :nearby,
+    summary: "Retrieve nearby star systems",
+    description:
+      "Returns the list of star systems that are near the specified origin star system. The results can be filtered by maximum distance (in light years), spectral class, and star counts.",
+    parameters: [
+      origin_id: [in: :path, description: "Origin star system ID", type: :integer, example: 1],
+      distance: [
+        in: :query,
+        description: "Maximum distance in light years (default: 25.0, min: 0.1, max: 100)",
+        schema: %OpenApiSpex.Schema{
+          type: :float,
+          minimum: 0.1,
+          maximum: 100.0
+        },
+        # type: :float,
+        # format: :float,
+        example: 25.0
+        # minimum: 0.1,
+        # maximum: 100.0
+      ],
+      page: [in: :query, description: "Page number", type: :integer, example: 1],
+      page_size: [
+        in: :query,
+        description: "Number of items per page",
+        type: :integer,
+        example: 100
+      ],
+      spectral_class: [
+        in: :query,
+        description:
+          "Filter by spectral class. Allowed values are O, B, A, F, G, K, M, L, T, Y, or U for Unknown.",
+        example: "G",
+        schema: StarChartWeb.Schema.Parameters.spectral_class()
+      ],
+      min_stars: [in: :query, description: "Minimum number of stars", type: :integer, example: 1],
+      max_stars: [in: :query, description: "Maximum number of stars", type: :integer, example: 10]
+    ],
+    responses: [
+      ok:
+        {"NearbyStarSystemsResponse", "application/json",
+         StarChartWeb.Schema.NearbyStarSystemsResponse}
+    ]
 
-  ## Parameters
-    - conn: The connection
-    - params: The request parameters
-      * "origin_id": The ID of the origin star system
-      * "distance": Maximum distance in light years (default: 25.0, min: 0.1, max: 100)
-      * "page": The page number (default: 1, min: 1)
-      * "page_size": Number of items per page (default: 100, min: 1, max: 200)
-      * "spectral_class": Filter by spectral class (optional)
-        Valid values: O, B, A, F, G, K, M, L, T, Y, U (where U represents unknown)
-      * "min_stars": Filter for star systems with at least this many stars (optional, min: 1)
-      * "max_stars": Filter for star systems with at most this many stars (optional, min: 1)
-
-  ## Returns
-    - JSON response with nearby star systems and their distances
-  """
   def nearby(conn, %{"origin_id" => origin_id} = params) do
     # Define validation schema for the parameters
     params_schema = %{
