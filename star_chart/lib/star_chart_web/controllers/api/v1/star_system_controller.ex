@@ -15,7 +15,7 @@ defmodule StarChartWeb.API.V1.StarSystemController do
       "min_stars" => %{type: :integer, min: 1},
       "max_stars" => %{type: :integer, min: 1}
     }
-    
+
     case Params.validate_params(params, pagination_schema) do
       {:ok, validated_params} ->
         page = validated_params["page"]
@@ -23,17 +23,18 @@ defmodule StarChartWeb.API.V1.StarSystemController do
         spectral_class = validated_params["spectral_class"]
         min_stars = validated_params["min_stars"]
         max_stars = validated_params["max_stars"]
-        
-        paginated_star_systems = Astronomy.list_star_systems_paginated(
-          page: page, 
-          page_size: page_size,
-          spectral_class: spectral_class,
-          min_stars: min_stars,
-          max_stars: max_stars
-        )
-        
+
+        paginated_star_systems =
+          Astronomy.list_star_systems_paginated(
+            page: page,
+            page_size: page_size,
+            spectral_class: spectral_class,
+            min_stars: min_stars,
+            max_stars: max_stars
+          )
+
         render(conn, :index, star_systems: paginated_star_systems)
-        
+
       {:error, {param, message}} ->
         conn
         |> put_status(:bad_request)
@@ -75,11 +76,10 @@ defmodule StarChartWeb.API.V1.StarSystemController do
       "min_stars" => %{type: :integer, min: 1},
       "max_stars" => %{type: :integer, min: 1}
     }
-    
+
     # Parse the origin_id to integer
     with {id, _} <- Integer.parse(origin_id),
          {:ok, validated_params} <- Params.validate_params(params, params_schema) do
-      
       # Extract the validated parameters
       distance = validated_params["distance"]
       page = validated_params["page"]
@@ -87,16 +87,16 @@ defmodule StarChartWeb.API.V1.StarSystemController do
       spectral_class = validated_params["spectral_class"]
       min_stars = validated_params["min_stars"]
       max_stars = validated_params["max_stars"]
-      
+
       # Call the Nearby module to find nearby star systems with filters and pagination
-      case Nearby.find_nearby_star_systems(id, 
-        max_distance: distance, 
-        page: page, 
-        page_size: page_size,
-        spectral_class: spectral_class,
-        min_stars: min_stars,
-        max_stars: max_stars
-      ) do
+      case Nearby.find_nearby_star_systems(id,
+             max_distance: distance,
+             page: page,
+             page_size: page_size,
+             spectral_class: spectral_class,
+             min_stars: min_stars,
+             max_stars: max_stars
+           ) do
         {:error, :not_found} ->
           conn
           |> put_status(:not_found)
@@ -112,7 +112,7 @@ defmodule StarChartWeb.API.V1.StarSystemController do
         |> put_status(:bad_request)
         |> put_view(StarChartWeb.ErrorJSON)
         |> render(:"400", %{detail: "Invalid parameter '#{param}': #{message}"})
-      
+
       _ ->
         conn
         |> put_status(:bad_request)

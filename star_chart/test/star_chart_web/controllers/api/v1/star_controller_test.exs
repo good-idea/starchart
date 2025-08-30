@@ -8,12 +8,13 @@ defmodule StarChartWeb.API.V1.StarControllerTest do
       # Add a primary star first
       insert(:star, name: "Primary Star", star_system_id: star_system.id, is_primary: true)
       # Then add the star we'll test
-      star = insert(:star, 
-        name: "Vega", 
-        star_system_id: star_system.id,
-        spectral_type: "A0Va",
-        spectral_class: "A"
-      )
+      star =
+        insert(:star,
+          name: "Vega",
+          star_system_id: star_system.id,
+          spectral_type: "A0Va",
+          spectral_class: "A"
+        )
 
       conn = get(conn, ~p"/api/v1/stars/#{star.id}")
       response = json_response(conn, 200)

@@ -5,6 +5,8 @@ defmodule StarChart.Accounts.User do
   schema "users" do
     field :username, :string
 
+    has_many :starships, StarChart.Accounts.Starship
+
     timestamps()
   end
 
