@@ -49,7 +49,7 @@ defmodule StarChart.Astronomy.Nearby do
     spectral_class = Keyword.get(opts, :spectral_class)
     min_stars = Keyword.get(opts, :min_stars)
     max_stars = Keyword.get(opts, :max_stars)
-    
+
     # Convert distance to parsecs (the x,y,z coordinates use parsecs)
     distance_parsecs = Utils.light_years_to_parsec(max_distance)
 
@@ -79,6 +79,7 @@ defmodule StarChart.Astronomy.Nearby do
         |> Enum.map(&StarChart.Astronomy.preload_primary_star/1)
         |> Enum.map(fn system ->
           distance = Utils.calculate_distance_between_systems(origin_system, system)
+
           %{
             system: system,
             distance: distance
@@ -88,16 +89,16 @@ defmodule StarChart.Astronomy.Nearby do
           distance.distance_parsecs <= distance_parsecs
         end)
         |> Enum.sort_by(fn %{distance: distance} -> distance.distance_parsecs end)
-      
+
       # Calculate total entries and pages
       total_entries = length(nearby_systems)
       total_pages = ceil(total_entries / page_size)
-      
+
       # Apply pagination
-      entries = 
+      entries =
         nearby_systems
-        |> Enum.slice(((page - 1) * page_size), page_size)
-      
+        |> Enum.slice((page - 1) * page_size, page_size)
+
       # Return paginated result
       %{
         entries: entries,
@@ -131,6 +132,7 @@ defmodule StarChart.Astronomy.Nearby do
   # Filter by spectral class
   defp filter_by_spectral_class(query, %{spectral_class: nil}), do: query
   defp filter_by_spectral_class(query, %{spectral_class: ""}), do: query
+
   defp filter_by_spectral_class(query, %{spectral_class: spectral_class}) do
     from [s, star] in query,
       where: star.spectral_class == ^spectral_class
@@ -138,16 +140,19 @@ defmodule StarChart.Astronomy.Nearby do
 
   # Apply star count filters
   defp filter_by_star_count(query, %{min_stars: nil, max_stars: nil}), do: query
+
   defp filter_by_star_count(query, params) do
     # Create the star count subquery
-    star_count_query = from star in Star,
-      group_by: star.star_system_id,
-      select: %{star_system_id: star.star_system_id, count: count(star.id)}
+    star_count_query =
+      from star in Star,
+        group_by: star.star_system_id,
+        select: %{star_system_id: star.star_system_id, count: count(star.id)}
 
     # Join with the star count subquery
-    query = from s in query,
-      join: sc in subquery(star_count_query),
-      on: s.id == sc.star_system_id
+    query =
+      from s in query,
+        join: sc in subquery(star_count_query),
+        on: s.id == sc.star_system_id
 
     # Apply filters
     query
@@ -157,6 +162,7 @@ defmodule StarChart.Astronomy.Nearby do
 
   # Filter by minimum number of stars
   defp filter_by_min_stars(query, %{min_stars: nil}), do: query
+
   defp filter_by_min_stars(query, %{min_stars: min_stars}) do
     from [s, star, sc] in query,
       where: sc.count >= ^min_stars
@@ -164,6 +170,7 @@ defmodule StarChart.Astronomy.Nearby do
 
   # Filter by maximum number of stars
   defp filter_by_max_stars(query, %{max_stars: nil}), do: query
+
   defp filter_by_max_stars(query, %{max_stars: max_stars}) do
     from [s, star, sc] in query,
       where: sc.count <= ^max_stars

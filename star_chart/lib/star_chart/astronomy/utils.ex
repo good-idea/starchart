@@ -125,15 +125,15 @@ defmodule StarChart.Astronomy.Utils do
     # Extract coordinates from primary stars
     %{primary_star: %{x: x1, y: y1, z: z1}} = system1
     %{primary_star: %{x: x2, y: y2, z: z2}} = system2
-    
+
     # Calculate Euclidean distance
     dx = x2 - x1
     dy = y2 - y1
     dz = z2 - z1
-    
+
     distance_parsecs = :math.sqrt(dx * dx + dy * dy + dz * dz)
     distance_light_years = parsec_to_light_years(distance_parsecs)
-    
+
     %Distance{
       distance_parsecs: distance_parsecs,
       distance_light_years: distance_light_years

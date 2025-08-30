@@ -76,7 +76,7 @@ defmodule StarChart.Astronomy.Star do
     # Spectral Type. Source: HYG 'spect' column.
     # Description: Classification of the star based on its temperature and other spectral characteristics (e.g., "G2V" for the Sun).
     field :spectral_type, :string
-    
+
     # Generic Spectral Type. Derived from the first character of the spectral_type field.
     # Description: The main spectral class (O, B, A, F, G, K, M, etc.) without subclass information.
     field :spectral_class, :string
@@ -191,7 +191,7 @@ defmodule StarChart.Astronomy.Star do
   end
 
   def right_ascension_degrees(_), do: nil
-  
+
   # Extract the spectral class from the spectral type
   defp set_spectral_class(changeset) do
     # First check if spectral_class is already set in the changeset
@@ -199,7 +199,9 @@ defmodule StarChart.Astronomy.Star do
       changeset
     else
       # If not, derive it from spectral_type (either from changes or data)
-      spectral_type = get_change(changeset, :spectral_type) || get_field(changeset, :spectral_type)
+      spectral_type =
+        get_change(changeset, :spectral_type) || get_field(changeset, :spectral_type)
+
       spectral_class = extract_spectral_class(spectral_type)
       put_change(changeset, :spectral_class, spectral_class)
     end
@@ -208,15 +210,17 @@ defmodule StarChart.Astronomy.Star do
   defp extract_spectral_class(nil), do: "U"
   defp extract_spectral_class(""), do: "U"
   defp extract_spectral_class("Unknown"), do: "U"
+
   defp extract_spectral_class(spectral_type) do
     # Get the first character and convert to uppercase
     first_char = String.slice(spectral_type, 0, 1) |> String.upcase()
-    
+
     # Check if it's a valid spectral class
     if first_char =~ ~r/[OBAFGKMLTY]/ do
       first_char
     else
-      "U"  # For any other character that's not a valid spectral class
+      # For any other character that's not a valid spectral class
+      "U"
     end
   end
 end

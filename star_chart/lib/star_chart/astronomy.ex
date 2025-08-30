@@ -42,7 +42,7 @@ defmodule StarChart.Astronomy do
   def list_star_systems_paginated(opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     page_size = Keyword.get(opts, :page_size, 100)
-    
+
     # Build query params map
     query_params = %{
       spectral_class: Keyword.get(opts, :spectral_class),
@@ -52,13 +52,13 @@ defmodule StarChart.Astronomy do
 
     # Build the query using the composable pattern
     query = build_query(query_params)
-    
+
     # Get the total count with filters applied
     total_count = Repo.aggregate(query, :count, :id)
-    
+
     # Calculate total pages
     total_pages = ceil(total_count / page_size)
-    
+
     # Get paginated results
     entries =
       query
@@ -78,12 +78,13 @@ defmodule StarChart.Astronomy do
 
   # Base query for star systems
   defp base_query do
-    from s in StarSystem
+    from(s in StarSystem)
   end
 
   # Filter by spectral class
   defp filter_by_spectral_class(query, %{spectral_class: nil}), do: query
   defp filter_by_spectral_class(query, %{spectral_class: ""}), do: query
+
   defp filter_by_spectral_class(query, %{spectral_class: spectral_class}) do
     from s in query,
       join: star in Star,
@@ -93,16 +94,19 @@ defmodule StarChart.Astronomy do
 
   # Apply star count filters
   defp filter_by_star_count(query, %{min_stars: nil, max_stars: nil}), do: query
+
   defp filter_by_star_count(query, params) do
     # Create the star count subquery
-    star_count_query = from star in Star,
-      group_by: star.star_system_id,
-      select: %{star_system_id: star.star_system_id, count: count(star.id)}
+    star_count_query =
+      from star in Star,
+        group_by: star.star_system_id,
+        select: %{star_system_id: star.star_system_id, count: count(star.id)}
 
     # Join with the star count subquery
-    query = from s in query,
-      join: sc in subquery(star_count_query),
-      on: s.id == sc.star_system_id
+    query =
+      from s in query,
+        join: sc in subquery(star_count_query),
+        on: s.id == sc.star_system_id
 
     # Apply filters
     query
@@ -112,6 +116,7 @@ defmodule StarChart.Astronomy do
 
   # Filter by minimum number of stars
   defp filter_by_min_stars(query, %{min_stars: nil}), do: query
+
   defp filter_by_min_stars(query, %{min_stars: min_stars}) do
     from [s, sc] in query,
       where: sc.count >= ^min_stars
@@ -119,6 +124,7 @@ defmodule StarChart.Astronomy do
 
   # Filter by maximum number of stars
   defp filter_by_max_stars(query, %{max_stars: nil}), do: query
+
   defp filter_by_max_stars(query, %{max_stars: max_stars}) do
     from [s, sc] in query,
       where: sc.count <= ^max_stars
@@ -225,28 +231,28 @@ defmodule StarChart.Astronomy do
     Repo.delete(star)
   end
 
-
   @doc """
   Preloads the primary star for a star system.
   """
   def preload_primary_star(nil), do: nil
+
   def preload_primary_star(star_system) do
     # Preload all stars to find the primary
     star_system = Repo.preload(star_system, :stars)
-    
+
     # Find the primary star
-    primary_star = 
+    primary_star =
       star_system.stars
       |> Enum.find(fn star -> star.is_primary end)
-    
+
     # Apply virtual fields only if we found a primary star
-    primary_star = 
+    primary_star =
       if primary_star do
         Star.with_virtual_fields(primary_star)
       else
         nil
       end
-    
+
     # Put the primary star in a separate field and add star count
     star_system
     |> Map.put(:primary_star, primary_star)
@@ -255,29 +261,30 @@ defmodule StarChart.Astronomy do
 
   # Helper function to preload all stars (for show)
   defp preload_all_stars(nil), do: nil
+
   defp preload_all_stars(star_system) do
     # First preload all stars
     star_system = Repo.preload(star_system, :stars)
-    
+
     # Then find the primary star and secondary stars
-    primary_star = 
+    primary_star =
       star_system.stars
       |> Enum.find(fn star -> star.is_primary end)
-    
-    secondary_stars = 
+
+    secondary_stars =
       star_system.stars
       |> Enum.filter(fn star -> !star.is_primary end)
       |> Enum.map(&Star.with_virtual_fields/1)
-    
+
     # Apply virtual fields only if we found a primary star
-    primary_star = 
+    primary_star =
       if primary_star do
         Star.with_virtual_fields(primary_star)
       else
         # Raise an exception if no primary star is found
         raise "No primary star found for star system #{star_system.id} (#{star_system.name})"
       end
-    
+
     # Put the primary star and secondary stars in separate fields and add star count
     star_system
     |> Map.put(:primary_star, primary_star)

@@ -139,13 +139,15 @@ defmodule StarChart.AstronomyTest do
       # Create a star in a different system to ensure filtering works
       other_system = insert(:star_system, name: "Other System")
       # Add a primary star to the other system
-      _other_primary = insert(:star, name: "Other Primary", star_system_id: other_system.id, is_primary: true)
+      _other_primary =
+        insert(:star, name: "Other Primary", star_system_id: other_system.id, is_primary: true)
+
       _other_star = insert(:star, name: "Other Star", star_system_id: other_system.id)
 
       stars = Astronomy.list_stars_by_system(star_system.id)
       # We expect 3 stars: the primary star from setup + the 2 we just added
       assert length(stars) == 3
-      
+
       # Check that our 2 new stars are in the results
       assert Enum.any?(stars, fn s -> s.id == star1.id end)
       assert Enum.any?(stars, fn s -> s.id == star2.id end)
