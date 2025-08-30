@@ -3,14 +3,16 @@ defmodule StarChartWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug OpenApiSpex.Plug.PutApiSpec, module: StarChartWeb.ApiSpec
   end
 
-  scope "/api", StarChartWeb do
+  scope "/api" do
     pipe_through :api
+    get "/openapi", OpenApiSpex.Plug.RenderSpec, []
 
-    scope "/v1", API.V1 do
+    scope "/v1", StarChartWeb.API.V1 do
       get "/star_systems/:origin_id/nearby", StarSystemController, :nearby
-      
+
       resources "/star_systems", StarSystemController, only: [:index, :show]
       resources "/stars", StarController, only: [:show]
     end

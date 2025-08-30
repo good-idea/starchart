@@ -55,6 +55,8 @@ config :star_chart, StarChartWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
+# Disable open api cache in dev
+config :open_api_spex, :cache_adapter, OpenApiSpex.Plug.NoneCache
 # Enable dev routes for dashboard and mailbox
 config :star_chart, dev_routes: true
 
