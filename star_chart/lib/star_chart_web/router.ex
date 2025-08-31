@@ -6,6 +6,15 @@ defmodule StarChartWeb.Router do
     plug(OpenApiSpex.Plug.PutApiSpec, module: StarChartWeb.ApiSpec)
   end
 
+  # Add browser pipeline for mailbox preview
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
   # Define a new pipeline for authenticated routes
   pipeline :auth do
     plug(StarChartWeb.Plugs.AuthPlug)
