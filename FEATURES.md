@@ -8,7 +8,7 @@ To Do:
 
 - [x] Create User schema and migration
 - [x] Implement Accounts context for user management
-- [ ] Create magic link token generation and verification
+- [x] Create magic link token generation and verification
 - [ ] Set up email service for sending magic links
 - [ ] Add controller and routes for user registration and authentication
 - [ ] Implement session management
