@@ -6,8 +6,8 @@ Add support for Users with magic link authentication. Users should have an email
 
 To Do:
 
-- [ ] Create User schema and migration
-- [ ] Implement Accounts context for user management
+- [x] Create User schema and migration
+- [x] Implement Accounts context for user management
 - [ ] Create magic link token generation and verification
 - [ ] Set up email service for sending magic links
 - [ ] Add controller and routes for user registration and authentication
