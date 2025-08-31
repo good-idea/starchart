@@ -30,9 +30,8 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-# Configure Swoosh for emails
-config :star_chart, StarChart.Mailer,
-  adapter: Swoosh.Adapters.Local
+# Configure Swoosh for emails (without specifying adapter)
+config :star_chart, StarChart.Mailer, []
 
 # Email configuration
 config :star_chart, :email,
