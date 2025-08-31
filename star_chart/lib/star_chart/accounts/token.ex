@@ -4,6 +4,7 @@ defmodule StarChart.Accounts.Token do
   """
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query, warn: false
   alias StarChart.Accounts.User
 
   @rand_size 32
