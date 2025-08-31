@@ -59,12 +59,24 @@ defmodule StarChart.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup"],
+      setup: ["deps.get", "data.setup", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "test.coverage": ["test", "coveralls.html"],
-      "openapi.generate": ["openapi.spec.json --spec StarChartWeb.ApiSpec"]
+      "openapi.generate": ["openapi.spec.json --spec StarChartWeb.ApiSpec"],
+      "data.setup": fn _args ->
+        {output, 0} =
+          if match?({:win32, _}, :os.type()) do
+            # Windows
+            System.cmd("cmd", ["/c", "sh ./data/download_hyg.sh"])
+          else
+            # macOS/Linux
+            System.cmd("sh", ["-c", "sh ./data/download_hyg.sh"])
+          end
+
+        IO.puts(output)
+      end
     ]
   end
 end

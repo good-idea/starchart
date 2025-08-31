@@ -31,3 +31,4 @@ star_chart-*.tar
 
 # Data sources
 /data/*.csv
+/data/*.csv.gz

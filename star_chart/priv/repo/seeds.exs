@@ -11,7 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 
 # Check if HYG data file exists
-hyg_file_path = Path.join([File.cwd!(), "data", "hyg_v41.csv"])
+hyg_file_path = Path.join([File.cwd!(), "data", "hyg.csv"])
 
 if File.exists?(hyg_file_path) do
   IO.puts("Found HYG database file at #{hyg_file_path}")
