@@ -17,15 +17,18 @@ defmodule StarChartWeb.API.V1.AuthController do
   operation(:register,
     summary: "Register a new user",
     description: "Creates a new user account and sends a magic link for authentication",
-    request_body: {"User registration", "application/json", Schema.UserRegistrationRequest, required: true},
+    request_body:
+      {"User registration", "application/json", Schema.UserRegistrationRequest, required: true},
     responses: [
-      created: {"Registration successful", "application/json", %OpenApiSpex.Schema{
-        type: :object,
-        properties: %{
-          message: %OpenApiSpex.Schema{type: :string, example: @registration_success_message}
-        },
-        required: [:message]
-      }},
+      created:
+        {"Registration successful", "application/json",
+         %OpenApiSpex.Schema{
+           type: :object,
+           properties: %{
+             message: %OpenApiSpex.Schema{type: :string, example: @registration_success_message}
+           },
+           required: [:message]
+         }},
       bad_request: {"Bad request", "application/json", Schema.ErrorResponse},
       unprocessable_entity: {"Validation error", "application/json", Schema.ErrorResponse}
     ]
@@ -69,13 +72,15 @@ defmodule StarChartWeb.API.V1.AuthController do
     description: "Sends a magic link to the user's email for authentication",
     request_body: {"Login request", "application/json", Schema.LoginRequest, required: true},
     responses: [
-      ok: {"Login email sent", "application/json", %OpenApiSpex.Schema{
-        type: :object,
-        properties: %{
-          message: %OpenApiSpex.Schema{type: :string, example: @magic_link_sent_message}
-        },
-        required: [:message]
-      }},
+      ok:
+        {"Login email sent", "application/json",
+         %OpenApiSpex.Schema{
+           type: :object,
+           properties: %{
+             message: %OpenApiSpex.Schema{type: :string, example: @magic_link_sent_message}
+           },
+           required: [:message]
+         }},
       bad_request: {"Bad request", "application/json", Schema.ErrorResponse}
     ]
   )
@@ -121,19 +126,21 @@ defmodule StarChartWeb.API.V1.AuthController do
     ],
     responses: [
       ok: {"Login successful", "application/json", Schema.SessionResponse},
-      unauthorized: {"Unauthorized", "application/json", %OpenApiSpex.Schema{
-        type: :object,
-        properties: %{
-          errors: %OpenApiSpex.Schema{
-            type: :object,
-            properties: %{
-              detail: %OpenApiSpex.Schema{type: :string, example: @invalid_token_message}
-            },
-            required: [:detail]
-          }
-        },
-        required: [:errors]
-      }}
+      unauthorized:
+        {"Unauthorized", "application/json",
+         %OpenApiSpex.Schema{
+           type: :object,
+           properties: %{
+             errors: %OpenApiSpex.Schema{
+               type: :object,
+               properties: %{
+                 detail: %OpenApiSpex.Schema{type: :string, example: @invalid_token_message}
+               },
+               required: [:detail]
+             }
+           },
+           required: [:errors]
+         }}
     ]
   )
 
@@ -144,11 +151,12 @@ defmodule StarChartWeb.API.V1.AuthController do
     case Accounts.verify_magic_link_token(token) do
       {:ok, user} ->
         # Generate a session token
-        session_token = Phoenix.Token.sign(
-          StarChartWeb.Endpoint,
-          "user auth",
-          user.id
-        )
+        session_token =
+          Phoenix.Token.sign(
+            StarChartWeb.Endpoint,
+            "user auth",
+            user.id
+          )
 
         conn
         |> put_resp_header("authorization", "Bearer #{session_token}")
@@ -176,13 +184,15 @@ defmodule StarChartWeb.API.V1.AuthController do
     description: "Logs out the current user",
     security: [%{"bearerAuth" => []}],
     responses: [
-      ok: {"Logout successful", "application/json", %OpenApiSpex.Schema{
-        type: :object,
-        properties: %{
-          message: %OpenApiSpex.Schema{type: :string, example: @logout_success_message}
-        },
-        required: [:message]
-      }}
+      ok:
+        {"Logout successful", "application/json",
+         %OpenApiSpex.Schema{
+           type: :object,
+           properties: %{
+             message: %OpenApiSpex.Schema{type: :string, example: @logout_success_message}
+           },
+           required: [:message]
+         }}
     ]
   )
 
