@@ -44,9 +44,7 @@ defmodule StarChart.MixProject do
       {:bandit, "~> 1.5"},
       {:csv, "~> 3.0"},
       {:cors_plug, "~> 3.0"},
-      {:swoosh, "~> 1.15"},
-      # Add this line for the mailbox preview
-      {:plug_cowboy, "~> 2.0"},
+      {:swoosh, "~> 1.19.5"},
       # Test dependencies
       {:ex_machina, "~> 2.7", only: :test},
       {:excoveralls, "~> 0.18", only: :test}

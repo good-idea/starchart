@@ -6,16 +6,14 @@ defmodule StarChartWeb.Router do
     plug(OpenApiSpex.Plug.PutApiSpec, module: StarChartWeb.ApiSpec)
   end
 
-  # Add browser pipeline for mailbox preview
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_flash
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_flash)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
-  # Define a new pipeline for authenticated routes
   pipeline :auth do
     plug(StarChartWeb.Plugs.AuthPlug)
   end
@@ -47,11 +45,11 @@ defmodule StarChartWeb.Router do
   end
 
   # Dev stuff
-  scope "/dev" do
-    pipe_through([:browser])
+  if Mix.env() == :dev do
+    scope "/dev" do
+      # pipe_through([:browser])
 
-    forward("/mailbox", Plug.Swoosh.MailboxPreview,
-      csp_nonce_assign_key: %{script: :script_csp_nonce, style: :style_csp_nonce}
-    )
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
+    end
   end
 end
