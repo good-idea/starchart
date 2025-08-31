@@ -14,4 +14,4 @@ To Do:
 - [x] Implement session management
 - [x] Add authentication middleware for protected routes
 - [x] Update OpenAPI documentation
-- [ ] Write tests for user authentication
+- [x] Write tests for user authentication
