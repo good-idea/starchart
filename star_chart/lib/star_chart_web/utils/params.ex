@@ -102,24 +102,32 @@ defmodule StarChartWeb.Utils.Params do
 
   defp validate_param(params, key, %{type: :string} = validation) do
     default = Map.get(validation, :default, "")
-    value = Map.get(params, key, default)
+    required = Map.get(validation, :required, false)
     
-    if is_binary(value) do
-      max_length = Map.get(validation, :max_length)
-      pattern = Map.get(validation, :pattern)
-      
-      cond do
-        not is_nil(max_length) and String.length(value) > max_length ->
-          {:error, "must be at most #{max_length} characters long"}
-          
-        not is_nil(pattern) and value != "" and not Regex.match?(pattern, value) ->
-          {:error, "must match the pattern #{inspect(pattern)}"}
-          
-        true ->
-          {:ok, {key, value}}
-      end
-    else
-      {:error, "must be a string"}
+    case Map.get(params, key) do
+      nil when required ->
+        {:error, "is required"}
+        
+      nil when not required ->
+        {:ok, {key, default}}
+        
+      value when is_binary(value) ->
+        max_length = Map.get(validation, :max_length)
+        pattern = Map.get(validation, :pattern)
+        
+        cond do
+          not is_nil(max_length) and String.length(value) > max_length ->
+            {:error, "must be at most #{max_length} characters long"}
+            
+          not is_nil(pattern) and value != "" and not Regex.match?(pattern, value) ->
+            {:error, "must match the pattern #{inspect(pattern)}"}
+            
+          true ->
+            {:ok, {key, value}}
+        end
+        
+      _ ->
+        {:error, "must be a string"}
     end
   end
 

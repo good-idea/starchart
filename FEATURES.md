@@ -9,9 +9,9 @@ To Do:
 - [x] Create User schema and migration
 - [x] Implement Accounts context for user management
 - [x] Create magic link token generation and verification
-- [ ] Set up email service for sending magic links
-- [ ] Add controller and routes for user registration and authentication
-- [ ] Implement session management
-- [ ] Add authentication middleware for protected routes
+- [x] Set up email service for sending magic links
+- [x] Add controller and routes for user registration and authentication
+- [x] Implement session management
+- [x] Add authentication middleware for protected routes
 - [ ] Update OpenAPI documentation
 - [ ] Write tests for user authentication
