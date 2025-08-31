@@ -27,7 +27,8 @@ defmodule StarChartWeb.Plugs.AuthPlug do
       StarChartWeb.Endpoint,
       "user auth",
       token,
-      max_age: 86400 * 30 # 30 days
+      # 30 days
+      max_age: 86400 * 30
     )
   end
 end

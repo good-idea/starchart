@@ -5,7 +5,7 @@ defmodule StarChartWeb.Utils.Params do
 
   @doc """
   Parses a string parameter into an integer.
-  
+
   ## Parameters
     - params: The params map from the request
     - key: The key to look up in the params map
@@ -32,22 +32,22 @@ defmodule StarChartWeb.Utils.Params do
 
   @doc """
   Validates parameters against a schema of validation rules.
-  
+
   ## Parameters
     - params: The params map from the request
     - schema: A map of parameter keys to validation rules
-  
+
   ## Validation Rules
     For numeric parameters:
       %{type: :integer, min: 1, max: 200, default: 1}
     
     For string parameters:
       %{type: :string, max_length: 100, default: ""}
-  
+
   ## Returns
     - {:ok, validated_params} if all validations pass
     - {:error, {key, error_message}} if any validation fails
-  
+
   ## Examples
       iex> validate_params(%{"page" => "5", "name" => "test"}, %{
       ...>   "page" => %{type: :integer, min: 1, max: 10, default: 1},
@@ -71,7 +71,7 @@ defmodule StarChartWeb.Utils.Params do
 
   defp validate_param(params, key, %{type: :integer} = validation) do
     default = Map.get(validation, :default)
-    
+
     case parse_int_param(params, key, default) do
       nil when is_nil(default) ->
         if Map.has_key?(params, key) do
@@ -79,22 +79,22 @@ defmodule StarChartWeb.Utils.Params do
         else
           {:ok, {key, nil}}
         end
-        
+
       value when is_integer(value) ->
         min = Map.get(validation, :min)
         max = Map.get(validation, :max)
-        
+
         cond do
           not is_nil(min) and value < min ->
             {:error, "must be greater than or equal to #{min}"}
-            
+
           not is_nil(max) and value > max ->
             {:error, "must be less than or equal to #{max}"}
-            
+
           true ->
             {:ok, {key, value}}
         end
-        
+
       _ ->
         {:error, "must be a valid integer"}
     end
@@ -103,29 +103,29 @@ defmodule StarChartWeb.Utils.Params do
   defp validate_param(params, key, %{type: :string} = validation) do
     default = Map.get(validation, :default, "")
     required = Map.get(validation, :required, false)
-    
+
     case Map.get(params, key) do
       nil when required ->
         {:error, "is required"}
-        
+
       nil when not required ->
         {:ok, {key, default}}
-        
+
       value when is_binary(value) ->
         max_length = Map.get(validation, :max_length)
         pattern = Map.get(validation, :pattern)
-        
+
         cond do
           not is_nil(max_length) and String.length(value) > max_length ->
             {:error, "must be at most #{max_length} characters long"}
-            
+
           not is_nil(pattern) and value != "" and not Regex.match?(pattern, value) ->
             {:error, "must match the pattern #{inspect(pattern)}"}
-            
+
           true ->
             {:ok, {key, value}}
         end
-        
+
       _ ->
         {:error, "must be a string"}
     end
@@ -134,51 +134,51 @@ defmodule StarChartWeb.Utils.Params do
   defp validate_param(params, key, %{type: :float} = validation) do
     default = Map.get(validation, :default)
     required = Map.get(validation, :required, false)
-    
+
     case Map.get(params, key) do
       nil when not required ->
         {:ok, {key, default}}
-        
+
       nil when required ->
         {:error, "is required"}
-        
+
       value when is_binary(value) ->
         case Float.parse(value) do
           {float_value, ""} ->
             min = Map.get(validation, :min)
             max = Map.get(validation, :max)
-            
+
             cond do
               not is_nil(min) and float_value < min ->
                 {:error, "must be greater than or equal to #{min}"}
-                
+
               not is_nil(max) and float_value > max ->
                 {:error, "must be less than or equal to #{max}"}
-                
+
               true ->
                 {:ok, {key, float_value}}
             end
-            
+
           _ ->
             {:error, "must be a valid number"}
         end
-        
+
       value when is_number(value) ->
         # If it's already a number, just validate min/max
         min = Map.get(validation, :min)
         max = Map.get(validation, :max)
-        
+
         cond do
           not is_nil(min) and value < min ->
             {:error, "must be greater than or equal to #{min}"}
-            
+
           not is_nil(max) and value > max ->
             {:error, "must be less than or equal to #{max}"}
-            
+
           true ->
             {:ok, {key, value}}
         end
-        
+
       _ ->
         {:error, "must be a valid number"}
     end

@@ -88,7 +88,7 @@ defmodule StarChart.Accounts do
   """
   def create_magic_link_token(%User{} = user) do
     {encoded_token, token} = generate_token()
-    
+
     # Create a token record
     token_attrs = %{
       token: token,
@@ -97,11 +97,11 @@ defmodule StarChart.Accounts do
       user_id: user.id,
       inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     }
-    
+
     %Token{}
     |> Token.changeset(token_attrs)
     |> Repo.insert()
-    
+
     encoded_token
   end
 
@@ -110,11 +110,11 @@ defmodule StarChart.Accounts do
   """
   def deliver_magic_link(%User{} = user) do
     encoded_token = create_magic_link_token(user)
-    
+
     # Send the email with the magic link
     StarChart.Email.magic_link(user, encoded_token)
     |> Mailer.deliver()
-    
+
     {:ok, encoded_token}
   end
 
@@ -127,10 +127,10 @@ defmodule StarChart.Accounts do
          %User{} = user <- get_user(user_id) do
       # Delete the token to prevent reuse
       Repo.delete(token_record)
-      
+
       # Update the user's last login timestamp
       {:ok, user} = log_user_login(user)
-      
+
       {:ok, user}
     else
       _ -> {:error, :invalid_token}

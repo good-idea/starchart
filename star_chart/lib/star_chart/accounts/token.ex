@@ -24,7 +24,7 @@ defmodule StarChart.Accounts.Token do
   """
   def build_email_token(user, context) do
     token = :crypto.strong_rand_bytes(@rand_size)
-    
+
     %__MODULE__{
       token: token,
       context: context,

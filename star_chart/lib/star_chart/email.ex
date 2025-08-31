@@ -2,19 +2,19 @@ defmodule StarChart.Email do
   @moduledoc """
   Email templates for the application.
   """
-  
+
   import Swoosh.Email
-  
+
   @doc """
   Builds a magic link email.
   """
   def magic_link(user, token) do
     # Build the magic link URL
     url = StarChartWeb.Endpoint.url() <> "/api/auth/magic-link/#{token}"
-    
+
     sender_email = Application.get_env(:star_chart, :email)[:sender_email]
     sender_name = Application.get_env(:star_chart, :email)[:sender_name]
-    
+
     new()
     |> to({user.username, user.email})
     |> from({sender_name, sender_email})
@@ -28,12 +28,12 @@ defmodule StarChart.Email do
     """)
     |> text_body("""
     Welcome to Star Chart!
-    
+
     Click the link below to sign in to your account:
     #{url}
-    
+
     This link will expire in 24 hours.
-    
+
     If you didn't request this email, you can safely ignore it.
     """)
   end

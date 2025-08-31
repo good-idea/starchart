@@ -30,7 +30,8 @@ defmodule StarChartWeb.API.V1.AuthController do
            required: [:message]
          }},
       bad_request: {"Bad request", "application/json", Schema.ValidationErrorResponse},
-      unprocessable_entity: {"Validation error", "application/json", Schema.ValidationErrorResponse}
+      unprocessable_entity:
+        {"Validation error", "application/json", Schema.ValidationErrorResponse}
     ]
   )
 

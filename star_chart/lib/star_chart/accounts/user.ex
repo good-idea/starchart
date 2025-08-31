@@ -46,8 +46,9 @@ defmodule StarChart.Accounts.User do
 
   defp validate_username(changeset) do
     changeset
-    |> validate_format(:username, ~r/^[a-zA-Z0-9_-]+$/, 
-       message: "only letters, numbers, underscores, and hyphens allowed")
+    |> validate_format(:username, ~r/^[a-zA-Z0-9_-]+$/,
+      message: "only letters, numbers, underscores, and hyphens allowed"
+    )
     |> validate_length(:username, min: 3, max: 30)
   end
 end
