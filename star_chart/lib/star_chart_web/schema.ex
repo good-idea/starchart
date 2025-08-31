@@ -4,6 +4,212 @@ defmodule StarChartWeb.Schema do
   """
 
   # --------------------------------------------------------------------
+  # User Authentication Schemas
+  # --------------------------------------------------------------------
+  defmodule User do
+    @moduledoc "Represents a User"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "User",
+      description: "A user account",
+      type: :object,
+      properties: %{
+        id: %Schema{type: :integer, description: "User ID"},
+        username: %Schema{type: :string, description: "User's username"}
+      },
+      required: [:id, :username],
+      example: %{
+        "id" => 123,
+        "username" => "stargazer"
+      }
+    })
+  end
+
+  defmodule UserRegistrationRequest do
+    @moduledoc "Request schema for user registration"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "UserRegistrationRequest",
+      description: "Request body for registering a new user",
+      type: :object,
+      properties: %{
+        user: %Schema{
+          type: :object,
+          properties: %{
+            email: %Schema{type: :string, description: "User's email address", format: :email},
+            username: %Schema{type: :string, description: "User's username", pattern: "^[a-zA-Z0-9_-]+$", minLength: 3, maxLength: 30}
+          },
+          required: [:email, :username]
+        }
+      },
+      required: [:user],
+      example: %{
+        "user" => %{
+          "email" => "user@example.com",
+          "username" => "stargazer"
+        }
+      }
+    })
+  end
+
+  defmodule UserRegistrationResponse do
+    @moduledoc "Response schema for user registration"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "UserRegistrationResponse",
+      description: "Response after successful user registration",
+      type: :object,
+      properties: %{
+        data: %Schema{
+          type: :object,
+          properties: %{
+            message: %Schema{type: :string, description: "Success message"}
+          },
+          required: [:message]
+        }
+      },
+      required: [:data],
+      example: %{
+        "data" => %{
+          "message" => "User created successfully. Check your email for login instructions."
+        }
+      }
+    })
+  end
+
+  defmodule LoginRequest do
+    @moduledoc "Request schema for login"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "LoginRequest",
+      description: "Request body for requesting a login link",
+      type: :object,
+      properties: %{
+        user: %Schema{
+          type: :object,
+          properties: %{
+            email: %Schema{type: :string, description: "User's email address", format: :email}
+          },
+          required: [:email]
+        }
+      },
+      required: [:user],
+      example: %{
+        "user" => %{
+          "email" => "user@example.com"
+        }
+      }
+    })
+  end
+
+  defmodule LoginResponse do
+    @moduledoc "Response schema for login request"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "LoginResponse",
+      description: "Response after requesting a login link",
+      type: :object,
+      properties: %{
+        data: %Schema{
+          type: :object,
+          properties: %{
+            message: %Schema{type: :string, description: "Success message"}
+          },
+          required: [:message]
+        }
+      },
+      required: [:data],
+      example: %{
+        "data" => %{
+          "message" => "Login link sent to your email."
+        }
+      }
+    })
+  end
+
+  defmodule SessionResponse do
+    @moduledoc "Response schema for session information"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+    alias StarChartWeb.Schema.User
+
+    OpenApiSpex.schema(%{
+      title: "SessionResponse",
+      description: "Response containing session information",
+      type: :object,
+      properties: %{
+        data: %Schema{
+          type: :object,
+          properties: %{
+            user: User,
+            token: %Schema{type: :string, description: "Session token"}
+          },
+          required: [:user, :token]
+        }
+      },
+      required: [:data],
+      example: %{
+        "data" => %{
+          "user" => %{
+            "id" => 123,
+            "username" => "stargazer"
+          },
+          "token" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        }
+      }
+    })
+  end
+
+  defmodule ErrorResponse do
+    @moduledoc "Error response schema"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "ErrorResponse",
+      description: "Response when an error occurs",
+      type: :object,
+      properties: %{
+        errors: %Schema{
+          type: :object,
+          properties: %{
+            detail: %Schema{type: :string, description: "Error message"},
+            fields: %Schema{
+              type: :object,
+              additionalProperties: %Schema{
+                type: :array,
+                items: %Schema{type: :string}
+              },
+              description: "Field-specific errors",
+              nullable: true
+            }
+          },
+          required: [:detail]
+        }
+      },
+      required: [:errors],
+      example: %{
+        "errors" => %{
+          "detail" => "Invalid request",
+          "fields" => %{
+            "email" => ["must have the @ sign and no spaces"]
+          }
+        }
+      }
+    })
+  end
+
+  # --------------------------------------------------------------------
   # Shared parameters
   # --------------------------------------------------------------------
   defmodule Parameters do
