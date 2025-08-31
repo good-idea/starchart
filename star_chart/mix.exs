@@ -63,7 +63,8 @@ defmodule StarChart.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "test.coverage": ["test", "coveralls.html"]
+      "test.coverage": ["test", "coveralls.html"],
+      "openapi.generate": ["openapi.spec.json --spec StarChartWeb.ApiSpec"]
     ]
   end
 end
