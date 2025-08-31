@@ -1,15 +1,15 @@
 defmodule StarChartWeb.API.V1.StarSystemController do
   use StarChartWeb, :controller
   use OpenApiSpex.ControllerSpecs
-  tags ["Stars"]
+  tags(["Stars"])
 
   alias StarChart.Astronomy
   alias StarChart.Astronomy.Nearby
   alias StarChartWeb.Utils.Params
 
-  action_fallback StarChartWeb.FallbackController
+  action_fallback(StarChartWeb.FallbackController)
 
-  operation :index,
+  operation(:index,
     summary: "List star systems",
     description: "Returns a paginated list of star systems with optional filtering.",
     parameters: [
@@ -35,6 +35,7 @@ defmodule StarChartWeb.API.V1.StarSystemController do
         {"ListStarSystemsResponse", "application/json",
          StarChartWeb.Schema.ListStarSystemsResponse}
     ]
+  )
 
   def index(conn, params) do
     pagination_schema = %{
@@ -72,7 +73,7 @@ defmodule StarChartWeb.API.V1.StarSystemController do
     end
   end
 
-  operation :show,
+  operation(:show,
     summary: "Retrieve a star system",
     description: "Returns detailed information for a star system given its ID.",
     parameters: [
@@ -83,13 +84,14 @@ defmodule StarChartWeb.API.V1.StarSystemController do
       # TODO set up not found schema
       # not_found: {"Not Found", "application/json", %{}}
     ]
+  )
 
   def show(conn, %{"id" => id}) do
     star_system = Astronomy.get_star_system!(id)
     render(conn, :show, star_system: star_system)
   end
 
-  operation :nearby,
+  operation(:nearby,
     summary: "Retrieve nearby star systems",
     description:
       "Returns the list of star systems that are near the specified origin star system. The results can be filtered by maximum distance (in light years), spectral class, and star counts.",
@@ -99,7 +101,8 @@ defmodule StarChartWeb.API.V1.StarSystemController do
         in: :query,
         description: "Maximum distance in light years (default: 25.0, min: 0.1, max: 100)",
         schema: %OpenApiSpex.Schema{
-          type: :float,
+          type: :number,
+          format: :float,
           minimum: 0.1,
           maximum: 100.0
         },
@@ -131,6 +134,7 @@ defmodule StarChartWeb.API.V1.StarSystemController do
         {"NearbyStarSystemsResponse", "application/json",
          StarChartWeb.Schema.NearbyStarSystemsResponse}
     ]
+  )
 
   def nearby(conn, %{"origin_id" => origin_id} = params) do
     # Define validation schema for the parameters

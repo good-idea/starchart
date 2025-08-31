@@ -41,7 +41,13 @@ defmodule StarChartWeb.Schema do
           type: :object,
           properties: %{
             email: %Schema{type: :string, description: "User's email address", format: :email},
-            username: %Schema{type: :string, description: "User's username", pattern: "^[a-zA-Z0-9_-]+$", minLength: 3, maxLength: 30}
+            username: %Schema{
+              type: :string,
+              description: "User's username",
+              pattern: "^[a-zA-Z0-9_-]+$",
+              minLength: 3,
+              maxLength: 30
+            }
           },
           required: [:email, :username]
         }
@@ -371,7 +377,7 @@ defmodule StarChartWeb.Schema do
     alias OpenApiSpex.Schema
 
     OpenApiSpex.schema(%{
-      title: "Star System",
+      title: "Star_System",
       description: "A star system",
       type: :object,
       properties: %{
