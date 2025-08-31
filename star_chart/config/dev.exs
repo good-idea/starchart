@@ -69,3 +69,12 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# For development, use the local adapter with the Swoosh mailbox preview
+config :star_chart, StarChart.Mailer, adapter: Swoosh.Adapters.Local
+
+# Configure Swoosh API client
+config :swoosh, :api_client, false
+
+# Swoosh mailbox preview in browser
+config :swoosh, :preview_port, 4001

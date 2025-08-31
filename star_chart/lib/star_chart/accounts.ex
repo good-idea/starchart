@@ -6,7 +6,8 @@ defmodule StarChart.Accounts do
 
   import Ecto.Query, warn: false
   alias StarChart.Repo
-  alias StarChart.Accounts.User
+  alias StarChart.Accounts.{User, Token}
+  alias StarChart.Mailer
 
   @doc """
   Returns the list of users.
@@ -80,5 +81,79 @@ defmodule StarChart.Accounts do
   """
   def delete_user(%User{} = user) do
     Repo.delete(user)
+  end
+
+  @doc """
+  Creates a magic link token for a user.
+  """
+  def create_magic_link_token(%User{} = user) do
+    {encoded_token, token} = generate_token()
+    
+    # Create a token record
+    token_attrs = %{
+      token: token,
+      context: "magic_link",
+      sent_to: user.email,
+      user_id: user.id,
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
+    
+    %Token{}
+    |> Token.changeset(token_attrs)
+    |> Repo.insert()
+    
+    encoded_token
+  end
+
+  @doc """
+  Delivers a magic link to the user.
+  """
+  def deliver_magic_link(%User{} = user) do
+    encoded_token = create_magic_link_token(user)
+    
+    # Send the email with the magic link
+    StarChart.Email.magic_link(user, encoded_token)
+    |> Mailer.deliver()
+    
+    {:ok, encoded_token}
+  end
+
+  @doc """
+  Verifies a magic link token.
+  """
+  def verify_magic_link_token(token) do
+    with {:ok, decoded_token} <- decode_token(token),
+         %Token{user_id: user_id} = token_record <- get_valid_token(decoded_token, "magic_link"),
+         %User{} = user <- get_user(user_id) do
+      # Delete the token to prevent reuse
+      Repo.delete(token_record)
+      
+      # Update the user's last login timestamp
+      {:ok, user} = log_user_login(user)
+      
+      {:ok, user}
+    else
+      _ -> {:error, :invalid_token}
+    end
+  end
+
+  # Private functions
+
+  defp get_valid_token(token, context) do
+    query = Token.verify_email_token_query(token, context)
+    Repo.one(query)
+  end
+
+  defp generate_token do
+    token = :crypto.strong_rand_bytes(32)
+    encoded_token = Base.url_encode64(token, padding: false)
+    {encoded_token, token}
+  end
+
+  defp decode_token(encoded_token) do
+    case Base.url_decode64(encoded_token, padding: false) do
+      {:ok, token} -> {:ok, token}
+      :error -> {:error, :invalid_token}
+    end
   end
 end
