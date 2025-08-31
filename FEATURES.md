@@ -13,5 +13,5 @@ To Do:
 - [x] Add controller and routes for user registration and authentication
 - [x] Implement session management
 - [x] Add authentication middleware for protected routes
-- [x] Update OpenAPI documentation
-- [x] Write tests for user authentication
+- [ ] Update OpenAPI documentation
+- [ ] Write tests for user authentication
