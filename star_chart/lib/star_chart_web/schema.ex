@@ -37,27 +37,19 @@ defmodule StarChartWeb.Schema do
       description: "Request body for registering a new user",
       type: :object,
       properties: %{
-        user: %Schema{
-          type: :object,
-          properties: %{
-            email: %Schema{type: :string, description: "User's email address", format: :email},
-            username: %Schema{
-              type: :string,
-              description: "User's username",
-              pattern: "^[a-zA-Z0-9_-]+$",
-              minLength: 3,
-              maxLength: 30
-            }
-          },
-          required: [:email, :username]
+        email: %Schema{type: :string, description: "User's email address", format: :email},
+        username: %Schema{
+          type: :string,
+          description: "User's username",
+          pattern: "^[a-zA-Z0-9_-]+$",
+          minLength: 3,
+          maxLength: 30
         }
       },
-      required: [:user],
+      required: [:email, :username],
       example: %{
-        "user" => %{
-          "email" => "user@example.com",
-          "username" => "stargazer"
-        }
+        "email" => "user@example.com",
+        "username" => "stargazer"
       }
     })
   end
@@ -99,19 +91,11 @@ defmodule StarChartWeb.Schema do
       description: "Request body for requesting a login link",
       type: :object,
       properties: %{
-        user: %Schema{
-          type: :object,
-          properties: %{
-            email: %Schema{type: :string, description: "User's email address", format: :email}
-          },
-          required: [:email]
-        }
+        email: %Schema{type: :string, description: "User's email address", format: :email}
       },
-      required: [:user],
+      required: [:email],
       example: %{
-        "user" => %{
-          "email" => "user@example.com"
-        }
+        "email" => "user@example.com"
       }
     })
   end
