@@ -5,6 +5,13 @@ defmodule StarChartWeb.API.V1.AuthController do
   alias StarChartWeb.Utils.Params
   alias StarChartWeb.Schema
 
+  # Define constants for response messages
+  @registration_success_message "User created successfully. Check your email for a magic link to log in."
+  @magic_link_sent_message "Magic link sent. Check your email to log in."
+  @login_success_message "Login successful"
+  @invalid_token_message "Invalid or expired token"
+  @logout_success_message "Logged out successfully"
+
   tags(["Authentication"])
 
   operation(:register,
@@ -15,7 +22,7 @@ defmodule StarChartWeb.API.V1.AuthController do
       created: {"Registration successful", "application/json", %OpenApiSpex.Schema{
         type: :object,
         properties: %{
-          message: %OpenApiSpex.Schema{type: :string, example: "User created successfully. Check your email for a magic link to log in."}
+          message: %OpenApiSpex.Schema{type: :string, example: @registration_success_message}
         },
         required: [:message]
       }},
@@ -41,7 +48,7 @@ defmodule StarChartWeb.API.V1.AuthController do
       conn
       |> put_status(:created)
       |> json(%{
-        message: "User created successfully. Check your email for a magic link to log in."
+        message: @registration_success_message
       })
     else
       {:error, {field, message}} ->
@@ -65,7 +72,7 @@ defmodule StarChartWeb.API.V1.AuthController do
       ok: {"Login email sent", "application/json", %OpenApiSpex.Schema{
         type: :object,
         properties: %{
-          message: %OpenApiSpex.Schema{type: :string, example: "Magic link sent. Check your email to log in."}
+          message: %OpenApiSpex.Schema{type: :string, example: @magic_link_sent_message}
         },
         required: [:message]
       }},
@@ -88,7 +95,7 @@ defmodule StarChartWeb.API.V1.AuthController do
 
       conn
       |> json(%{
-        message: "Magic link sent. Check your email to log in."
+        message: @magic_link_sent_message
       })
     else
       {:error, {field, message}} ->
@@ -101,7 +108,7 @@ defmodule StarChartWeb.API.V1.AuthController do
         # Just pretend we sent the email
         conn
         |> json(%{
-          message: "Magic link sent. Check your email to log in."
+          message: @magic_link_sent_message
         })
     end
   end
@@ -114,7 +121,19 @@ defmodule StarChartWeb.API.V1.AuthController do
     ],
     responses: [
       ok: {"Login successful", "application/json", Schema.SessionResponse},
-      unauthorized: {"Unauthorized", "application/json", Schema.ErrorResponse}
+      unauthorized: {"Unauthorized", "application/json", %OpenApiSpex.Schema{
+        type: :object,
+        properties: %{
+          errors: %OpenApiSpex.Schema{
+            type: :object,
+            properties: %{
+              detail: %OpenApiSpex.Schema{type: :string, example: @invalid_token_message}
+            },
+            required: [:detail]
+          }
+        },
+        required: [:errors]
+      }}
     ]
   )
 
@@ -134,7 +153,7 @@ defmodule StarChartWeb.API.V1.AuthController do
         conn
         |> put_resp_header("authorization", "Bearer #{session_token}")
         |> json(%{
-          message: "Login successful",
+          message: @login_success_message,
           token: session_token,
           user: %{
             id: user.id,
@@ -147,7 +166,7 @@ defmodule StarChartWeb.API.V1.AuthController do
         conn
         |> put_status(:unauthorized)
         |> json(%{
-          errors: %{detail: "Invalid or expired token"}
+          errors: %{detail: @invalid_token_message}
         })
     end
   end
@@ -160,7 +179,7 @@ defmodule StarChartWeb.API.V1.AuthController do
       ok: {"Logout successful", "application/json", %OpenApiSpex.Schema{
         type: :object,
         properties: %{
-          message: %OpenApiSpex.Schema{type: :string, example: "Logged out successfully"}
+          message: %OpenApiSpex.Schema{type: :string, example: @logout_success_message}
         },
         required: [:message]
       }}
@@ -173,7 +192,7 @@ defmodule StarChartWeb.API.V1.AuthController do
   def logout(conn, _params) do
     conn
     |> json(%{
-      message: "Logged out successfully"
+      message: @logout_success_message
     })
   end
 end
