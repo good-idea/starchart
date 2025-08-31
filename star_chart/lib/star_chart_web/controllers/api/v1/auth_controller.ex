@@ -1,7 +1,28 @@
 defmodule StarChartWeb.API.V1.AuthController do
   use StarChartWeb, :controller
+  use OpenApiSpex.ControllerSpecs
   alias StarChart.Accounts
   alias StarChartWeb.Utils.Params
+  alias StarChartWeb.Schema
+
+  tags(["Authentication"])
+
+  operation(:register,
+    summary: "Register a new user",
+    description: "Creates a new user account and sends a magic link for authentication",
+    request_body: {"User registration", "application/json", Schema.UserRegistrationRequest, required: true},
+    responses: [
+      created: {"Registration successful", "application/json", %OpenApiSpex.Schema{
+        type: :object,
+        properties: %{
+          message: %OpenApiSpex.Schema{type: :string, example: "User created successfully. Check your email for a magic link to log in."}
+        },
+        required: [:message]
+      }},
+      bad_request: {"Bad request", "application/json", Schema.ErrorResponse},
+      unprocessable_entity: {"Validation error", "application/json", Schema.ErrorResponse}
+    ]
+  )
 
   @doc """
   Register a new user.
@@ -36,6 +57,22 @@ defmodule StarChartWeb.API.V1.AuthController do
     end
   end
 
+  operation(:login,
+    summary: "Login with email",
+    description: "Sends a magic link to the user's email for authentication",
+    request_body: {"Login request", "application/json", Schema.LoginRequest, required: true},
+    responses: [
+      ok: {"Login email sent", "application/json", %OpenApiSpex.Schema{
+        type: :object,
+        properties: %{
+          message: %OpenApiSpex.Schema{type: :string, example: "Magic link sent. Check your email to log in."}
+        },
+        required: [:message]
+      }},
+      bad_request: {"Bad request", "application/json", Schema.ErrorResponse}
+    ]
+  )
+
   @doc """
   Send a magic link to an existing user.
   """
@@ -68,6 +105,18 @@ defmodule StarChartWeb.API.V1.AuthController do
         })
     end
   end
+
+  operation(:verify,
+    summary: "Verify magic link token",
+    description: "Verifies a magic link token and returns a session token if valid",
+    parameters: [
+      token: [in: :path, description: "Magic link token", type: :string, example: "abc123"]
+    ],
+    responses: [
+      ok: {"Login successful", "application/json", Schema.SessionResponse},
+      unauthorized: {"Unauthorized", "application/json", Schema.ErrorResponse}
+    ]
+  )
 
   @doc """
   Verify a magic link token and log the user in.
@@ -102,6 +151,21 @@ defmodule StarChartWeb.API.V1.AuthController do
         })
     end
   end
+
+  operation(:logout,
+    summary: "Logout",
+    description: "Logs out the current user",
+    security: [%{"bearerAuth" => []}],
+    responses: [
+      ok: {"Logout successful", "application/json", %OpenApiSpex.Schema{
+        type: :object,
+        properties: %{
+          message: %OpenApiSpex.Schema{type: :string, example: "Logged out successfully"}
+        },
+        required: [:message]
+      }}
+    ]
+  )
 
   @doc """
   Log out the current user.
