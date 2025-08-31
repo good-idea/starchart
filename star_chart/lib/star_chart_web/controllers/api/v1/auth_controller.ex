@@ -29,8 +29,8 @@ defmodule StarChartWeb.API.V1.AuthController do
            },
            required: [:message]
          }},
-      bad_request: {"Bad request", "application/json", Schema.ErrorResponse},
-      unprocessable_entity: {"Validation error", "application/json", Schema.ErrorResponse}
+      bad_request: {"Bad request", "application/json", Schema.ValidationErrorResponse},
+      unprocessable_entity: {"Validation error", "application/json", Schema.ValidationErrorResponse}
     ]
   )
 
@@ -81,7 +81,7 @@ defmodule StarChartWeb.API.V1.AuthController do
            },
            required: [:message]
          }},
-      bad_request: {"Bad request", "application/json", Schema.ErrorResponse}
+      bad_request: {"Bad request", "application/json", Schema.ValidationErrorResponse}
     ]
   )
 
@@ -126,21 +126,7 @@ defmodule StarChartWeb.API.V1.AuthController do
     ],
     responses: [
       ok: {"Login successful", "application/json", Schema.SessionResponse},
-      unauthorized:
-        {"Unauthorized", "application/json",
-         %OpenApiSpex.Schema{
-           type: :object,
-           properties: %{
-             errors: %OpenApiSpex.Schema{
-               type: :object,
-               properties: %{
-                 detail: %OpenApiSpex.Schema{type: :string, example: @invalid_token_message}
-               },
-               required: [:detail]
-             }
-           },
-           required: [:errors]
-         }}
+      unauthorized: {"Unauthorized", "application/json", Schema.AuthenticationErrorResponse}
     ]
   )
 

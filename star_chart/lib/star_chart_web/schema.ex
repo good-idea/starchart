@@ -160,8 +160,75 @@ defmodule StarChartWeb.Schema do
     })
   end
 
+  defmodule ValidationErrorResponse do
+    @moduledoc "Validation error response schema"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "ValidationErrorResponse",
+      description: "Response when a validation error occurs",
+      type: :object,
+      properties: %{
+        errors: %Schema{
+          type: :object,
+          properties: %{
+            detail: %Schema{type: :string, description: "Error message"},
+            fields: %Schema{
+              type: :object,
+              additionalProperties: %Schema{
+                type: :array,
+                items: %Schema{type: :string}
+              },
+              description: "Field-specific errors",
+              nullable: true
+            }
+          },
+          required: [:detail]
+        }
+      },
+      required: [:errors],
+      example: %{
+        "errors" => %{
+          "detail" => "Invalid request",
+          "fields" => %{
+            "email" => ["must have the @ sign and no spaces"]
+          }
+        }
+      }
+    })
+  end
+
+  defmodule AuthenticationErrorResponse do
+    @moduledoc "Authentication error response schema"
+    require OpenApiSpex
+    alias OpenApiSpex.Schema
+
+    OpenApiSpex.schema(%{
+      title: "AuthenticationErrorResponse",
+      description: "Response when an authentication error occurs",
+      type: :object,
+      properties: %{
+        errors: %Schema{
+          type: :object,
+          properties: %{
+            detail: %Schema{type: :string, description: "Error message"}
+          },
+          required: [:detail]
+        }
+      },
+      required: [:errors],
+      example: %{
+        "errors" => %{
+          "detail" => "Invalid or expired token"
+        }
+      }
+    })
+  end
+
+  # For backward compatibility
   defmodule ErrorResponse do
-    @moduledoc "Error response schema"
+    @moduledoc "Error response schema (deprecated, use ValidationErrorResponse or AuthenticationErrorResponse)"
     require OpenApiSpex
     alias OpenApiSpex.Schema
 

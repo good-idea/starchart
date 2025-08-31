@@ -27,7 +27,7 @@ defmodule StarChartWeb.API.V1.UserController do
         },
         required: [:data]
       }},
-      unauthorized: {"Unauthorized", "application/json", Schema.ErrorResponse}
+      unauthorized: {"Unauthorized", "application/json", Schema.AuthenticationErrorResponse}
     ]
   )
 
