@@ -12,9 +12,12 @@ defmodule StarChart.Email do
     # Build the magic link URL
     url = StarChartWeb.Endpoint.url() <> "/api/auth/magic-link/#{token}"
     
+    sender_email = Application.get_env(:star_chart, :email)[:sender_email]
+    sender_name = Application.get_env(:star_chart, :email)[:sender_name]
+    
     new()
     |> to({user.username, user.email})
-    |> from({"Star Chart", "noreply@starchart.example.com"})
+    |> from({sender_name, sender_email})
     |> subject("Sign in to Star Chart")
     |> html_body("""
     <h1>Welcome to Star Chart!</h1>

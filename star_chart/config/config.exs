@@ -34,6 +34,11 @@ config :phoenix, :json_library, Jason
 config :star_chart, StarChart.Mailer,
   adapter: Swoosh.Adapters.Local
 
+# Email configuration
+config :star_chart, :email,
+  sender_email: "noreply@starchart.example.com",
+  sender_name: "Star Chart"
+
 # Configure Swoosh API client
 config :swoosh, :api_client, false
 
