@@ -30,6 +30,17 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Configure Swoosh for emails (without specifying adapter)
+config :star_chart, StarChart.Mailer, []
+
+# Email configuration
+config :star_chart, :email,
+  sender_email: "noreply@starchart.example.com",
+  sender_name: "Star Chart"
+
+# Configure Swoosh API client
+config :swoosh, :api_client, false
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

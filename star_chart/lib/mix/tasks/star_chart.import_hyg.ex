@@ -134,7 +134,6 @@ defmodule Mix.Tasks.StarChart.ImportHyg do
     })
   end
 
-
   defp get_spectral_type(spect) do
     case spect do
       "" -> "Unknown"
@@ -146,7 +145,7 @@ defmodule Mix.Tasks.StarChart.ImportHyg do
   defp create_star(star_data, star_system_id, is_primary) do
     # Extract the spectral type
     spectral_type = get_spectral_type(star_data["spect"])
-    
+
     # Prepare the attributes for the star
     attrs = %{
       star_system_id: star_system_id,

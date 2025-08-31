@@ -1,0 +1,1237 @@
+{
+  "components": {
+    "responses": {},
+    "schemas": {
+      "AuthenticationErrorResponse": {
+        "description": "Response when an authentication error occurs",
+        "example": { "errors": { "detail": "Invalid or expired token" } },
+        "properties": {
+          "errors": {
+            "properties": {
+              "detail": {
+                "description": "Error message",
+                "type": "string",
+                "x-struct": null,
+                "x-validate": null
+              }
+            },
+            "required": ["detail"],
+            "type": "object",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["errors"],
+        "title": "AuthenticationErrorResponse",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.AuthenticationErrorResponse",
+        "x-validate": null
+      },
+      "GetStarResponse": {
+        "description": "Response containing a star",
+        "properties": { "data": { "$ref": "#/components/schemas/Star" } },
+        "required": ["data"],
+        "title": "GetStarResponse",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.GetStarResponse",
+        "x-validate": null
+      },
+      "GetStarSystemResponse": {
+        "description": "Response containing a star system",
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Star_System" }
+        },
+        "required": ["data"],
+        "title": "GetStarSystemResponse",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.GetStarSystemResponse",
+        "x-validate": null
+      },
+      "ListStarSystemsResponse": {
+        "description": "Response containing a list of star systems along with pagination metadata",
+        "properties": {
+          "data": {
+            "description": "List of star systems",
+            "items": {
+              "properties": {
+                "id": {
+                  "description": "Unique identifier for the star system",
+                  "type": "integer",
+                  "x-struct": null,
+                  "x-validate": null
+                },
+                "name": {
+                  "description": "Name of the star system",
+                  "type": "string",
+                  "x-struct": null,
+                  "x-validate": null
+                },
+                "primary_star": { "$ref": "#/components/schemas/Star" },
+                "secondary_stars": {
+                  "description": "List of secondary stars in the system",
+                  "items": { "$ref": "#/components/schemas/Star" },
+                  "type": "array",
+                  "x-struct": null,
+                  "x-validate": null
+                },
+                "star_count": {
+                  "description": "Total number of stars in the system",
+                  "type": "integer",
+                  "x-struct": null,
+                  "x-validate": null
+                }
+              },
+              "required": ["id", "name"],
+              "type": "object",
+              "x-struct": null,
+              "x-validate": null
+            },
+            "type": "array",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "meta": {
+            "description": "Pagination metadata for the results",
+            "properties": {
+              "page": {
+                "description": "Current page number",
+                "type": "integer",
+                "x-struct": null,
+                "x-validate": null
+              },
+              "page_size": {
+                "description": "Number of items per page",
+                "type": "integer",
+                "x-struct": null,
+                "x-validate": null
+              },
+              "total_entries": {
+                "description": "Total number of star systems",
+                "type": "integer",
+                "x-struct": null,
+                "x-validate": null
+              },
+              "total_pages": {
+                "description": "Total number of pages available",
+                "type": "integer",
+                "x-struct": null,
+                "x-validate": null
+              }
+            },
+            "required": ["page", "page_size", "total_entries", "total_pages"],
+            "type": "object",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["data", "meta"],
+        "title": "ListStarSystemsResponse",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.ListStarSystemsResponse",
+        "x-validate": null
+      },
+      "LoginRequest": {
+        "description": "Request body for requesting a login link",
+        "example": { "email": "user@example.com" },
+        "properties": {
+          "email": {
+            "description": "User's email address",
+            "format": "email",
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["email"],
+        "title": "LoginRequest",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.LoginRequest",
+        "x-validate": null
+      },
+      "NearbyStarSystemsResponse": {
+        "description": "Response containing a list of nearby star systems with distance information.",
+        "properties": {
+          "data": {
+            "description": "List of nearby star systems with distance information",
+            "items": {
+              "properties": {
+                "distance": {
+                  "description": "Distance information",
+                  "properties": {
+                    "light_years": {
+                      "description": "Distance in light years",
+                      "format": "float",
+                      "type": "number",
+                      "x-struct": null,
+                      "x-validate": null
+                    },
+                    "parsecs": {
+                      "description": "Distance in parsecs",
+                      "format": "float",
+                      "type": "number",
+                      "x-struct": null,
+                      "x-validate": null
+                    }
+                  },
+                  "required": ["parsecs", "light_years"],
+                  "type": "object",
+                  "x-struct": null,
+                  "x-validate": null
+                },
+                "system": {
+                  "description": "A star system object",
+                  "properties": {
+                    "id": {
+                      "description": "Unique identifier for the star system",
+                      "type": "integer",
+                      "x-struct": null,
+                      "x-validate": null
+                    },
+                    "name": {
+                      "description": "Name of the star system",
+                      "type": "string",
+                      "x-struct": null,
+                      "x-validate": null
+                    },
+                    "star_count": {
+                      "description": "Total number of stars in the system",
+                      "type": "integer",
+                      "x-struct": null,
+                      "x-validate": null
+                    }
+                  },
+                  "required": ["id", "name"],
+                  "title": "StarSystem",
+                  "type": "object",
+                  "x-struct": null,
+                  "x-validate": null
+                }
+              },
+              "required": ["system", "distance"],
+              "type": "object",
+              "x-struct": null,
+              "x-validate": null
+            },
+            "type": "array",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "meta": {
+            "description": "Pagination metadata for the results",
+            "properties": {
+              "page": {
+                "description": "Current page number",
+                "type": "integer",
+                "x-struct": null,
+                "x-validate": null
+              },
+              "page_size": {
+                "description": "Number of items per page",
+                "type": "integer",
+                "x-struct": null,
+                "x-validate": null
+              },
+              "total_entries": {
+                "description": "Total number of star systems",
+                "type": "integer",
+                "x-struct": null,
+                "x-validate": null
+              },
+              "total_pages": {
+                "description": "Total number of pages available",
+                "type": "integer",
+                "x-struct": null,
+                "x-validate": null
+              }
+            },
+            "required": ["page", "page_size", "total_entries", "total_pages"],
+            "type": "object",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["data", "meta"],
+        "title": "NearbyStarSystemsResponse",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.NearbyStarSystemsResponse",
+        "x-validate": null
+      },
+      "SessionResponse": {
+        "description": "Response containing session information",
+        "example": {
+          "data": {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "user": { "id": 123, "username": "stargazer" }
+          }
+        },
+        "properties": {
+          "data": {
+            "properties": {
+              "token": {
+                "description": "Session token",
+                "type": "string",
+                "x-struct": null,
+                "x-validate": null
+              },
+              "user": { "$ref": "#/components/schemas/User" }
+            },
+            "required": ["user", "token"],
+            "type": "object",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["data"],
+        "title": "SessionResponse",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.SessionResponse",
+        "x-validate": null
+      },
+      "Star": {
+        "description": "A star object",
+        "properties": {
+          "absolute_magnitude": {
+            "description": "Absolute magnitude",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "apparent_magnitude": {
+            "description": "Apparent magnitude",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "bayer_flamsteed": {
+            "description": "Bayer or Flamsteed designation",
+            "nullable": true,
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "color_index": {
+            "description": "Color index",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "constellation": {
+            "description": "Constellation",
+            "nullable": true,
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "declination": {
+            "description": "Declination",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "distance_parsecs": {
+            "description": "Distance in parsecs",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "gl": {
+            "description": "GL catalog number",
+            "nullable": true,
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "hd": {
+            "description": "HD catalog number",
+            "nullable": true,
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "hip": {
+            "description": "Hipparcos catalog number",
+            "nullable": true,
+            "type": "integer",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "hr": {
+            "description": "HR catalog number",
+            "nullable": true,
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "id": {
+            "description": "Unique identifier for the star",
+            "type": "integer",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "is_primary": {
+            "description": "Indicates if the star is the primary star in its system",
+            "type": "boolean",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "luminosity": {
+            "description": "Luminosity",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "name": {
+            "description": "Name of the star",
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "proper_motion_dec": {
+            "description": "Proper motion in Dec",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "proper_motion_ra": {
+            "description": "Proper motion in RA",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "proper_name": {
+            "description": "Proper name of the star",
+            "nullable": true,
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "radial_velocity": {
+            "description": "Radial velocity",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "right_ascension": {
+            "description": "Right ascension",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "right_ascension_degrees": {
+            "description": "Right ascension in degrees",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "spectral_class": {
+            "description": "Spectral class",
+            "nullable": true,
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "spectral_type": {
+            "description": "Spectral type",
+            "nullable": true,
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "star_system_id": {
+            "description": "Associated star system ID",
+            "nullable": true,
+            "type": "integer",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "variable_max": {
+            "description": "Maximum variability",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "variable_min": {
+            "description": "Minimum variability",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "variable_type": {
+            "description": "Variable type",
+            "nullable": true,
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "x": {
+            "description": "X coordinate",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "y": {
+            "description": "Y coordinate",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "z": {
+            "description": "Z coordinate",
+            "format": "float",
+            "nullable": true,
+            "type": "number",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["id", "name", "is_primary"],
+        "title": "Star",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.Star",
+        "x-validate": null
+      },
+      "StarSystem": {
+        "description": "A star system object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the star system",
+            "type": "integer",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "name": {
+            "description": "Name of the star system",
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "star_count": {
+            "description": "Total number of stars in the system",
+            "type": "integer",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["id", "name"],
+        "title": "StarSystem",
+        "type": "object",
+        "x-struct": null,
+        "x-validate": null
+      },
+      "Star_System": {
+        "description": "A star system",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the star system",
+            "type": "integer",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "name": {
+            "description": "Name of the star system",
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "primary_star": { "$ref": "#/components/schemas/Star" },
+          "secondary_stars": {
+            "description": "List of secondary stars in the system",
+            "items": { "$ref": "#/components/schemas/Star" },
+            "type": "array",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "star_count": {
+            "description": "Total number of stars in the system",
+            "type": "integer",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["id", "name"],
+        "title": "Star_System",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.StarSystem",
+        "x-validate": null
+      },
+      "User": {
+        "description": "A user account",
+        "example": { "id": 123, "username": "stargazer" },
+        "properties": {
+          "id": {
+            "description": "User ID",
+            "type": "integer",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "username": {
+            "description": "User's username",
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["id", "username"],
+        "title": "User",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.User",
+        "x-validate": null
+      },
+      "UserRegistrationRequest": {
+        "description": "Request body for registering a new user",
+        "example": { "email": "user@example.com", "username": "stargazer" },
+        "properties": {
+          "email": {
+            "description": "User's email address",
+            "format": "email",
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          },
+          "username": {
+            "description": "User's username",
+            "maxLength": 30,
+            "minLength": 3,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "type": "string",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["email", "username"],
+        "title": "UserRegistrationRequest",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.UserRegistrationRequest",
+        "x-validate": null
+      },
+      "ValidationErrorResponse": {
+        "description": "Response when a validation error occurs",
+        "example": {
+          "errors": {
+            "detail": "Invalid request",
+            "fields": { "email": ["must have the @ sign and no spaces"] }
+          }
+        },
+        "properties": {
+          "errors": {
+            "properties": {
+              "detail": {
+                "description": "Error message",
+                "type": "string",
+                "x-struct": null,
+                "x-validate": null
+              },
+              "fields": {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string",
+                    "x-struct": null,
+                    "x-validate": null
+                  },
+                  "type": "array",
+                  "x-struct": null,
+                  "x-validate": null
+                },
+                "description": "Field-specific errors",
+                "nullable": true,
+                "type": "object",
+                "x-struct": null,
+                "x-validate": null
+              }
+            },
+            "required": ["detail"],
+            "type": "object",
+            "x-struct": null,
+            "x-validate": null
+          }
+        },
+        "required": ["errors"],
+        "title": "ValidationErrorResponse",
+        "type": "object",
+        "x-struct": "Elixir.StarChartWeb.Schema.ValidationErrorResponse",
+        "x-validate": null
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "bearerFormat": "JWT",
+        "description": "Enter JWT token",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": { "title": "", "version": "" },
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "callbacks": {},
+        "description": "Sends a magic link to the user's email for authentication",
+        "operationId": "StarChartWeb.API.V1.AuthController.login",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          },
+          "description": "Login request",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "Magic link sent. Check your email to log in.",
+                      "type": "string",
+                      "x-struct": null,
+                      "x-validate": null
+                    }
+                  },
+                  "required": ["message"],
+                  "type": "object",
+                  "x-struct": null,
+                  "x-validate": null
+                }
+              }
+            },
+            "description": "Login email sent"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "description": "Bad request"
+          }
+        },
+        "summary": "Login with email",
+        "tags": ["Authentication"]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "callbacks": {},
+        "description": "Logs out the current user",
+        "operationId": "StarChartWeb.API.V1.AuthController.logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "Logged out successfully",
+                      "type": "string",
+                      "x-struct": null,
+                      "x-validate": null
+                    }
+                  },
+                  "required": ["message"],
+                  "type": "object",
+                  "x-struct": null,
+                  "x-validate": null
+                }
+              }
+            },
+            "description": "Logout successful"
+          }
+        },
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Logout",
+        "tags": ["Authentication"]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "callbacks": {},
+        "description": "Creates a new user account and sends a magic link for authentication",
+        "operationId": "StarChartWeb.API.V1.AuthController.register",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegistrationRequest"
+              }
+            }
+          },
+          "description": "User registration",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "example": "User created successfully. Check your email for a magic link to log in.",
+                      "type": "string",
+                      "x-struct": null,
+                      "x-validate": null
+                    }
+                  },
+                  "required": ["message"],
+                  "type": "object",
+                  "x-struct": null,
+                  "x-validate": null
+                }
+              }
+            },
+            "description": "Registration successful"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "description": "Validation error"
+          }
+        },
+        "summary": "Register a new user",
+        "tags": ["Authentication"]
+      }
+    },
+    "/api/v1/auth/verify/{token}": {
+      "get": {
+        "callbacks": {},
+        "description": "Verifies a magic link token and returns a session token if valid",
+        "operationId": "StarChartWeb.API.V1.AuthController.verify",
+        "parameters": [
+          {
+            "description": "Magic link token",
+            "example": "abc123",
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": { "type": "string", "x-struct": null, "x-validate": null }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SessionResponse" }
+              }
+            },
+            "description": "Login successful"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          }
+        },
+        "summary": "Verify magic link token",
+        "tags": ["Authentication"]
+      }
+    },
+    "/api/v1/star_systems": {
+      "get": {
+        "callbacks": {},
+        "description": "Returns a paginated list of star systems with optional filtering.",
+        "operationId": "StarChartWeb.API.V1.StarSystemController.index",
+        "parameters": [
+          {
+            "description": "Page number",
+            "example": 1,
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Number of items per page",
+            "example": 100,
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Filter by spectral class. Allowed values are O, B, A, F, G, K, M, L, T, Y, or U for Unknown.",
+            "example": "G",
+            "in": "query",
+            "name": "spectral_class",
+            "required": false,
+            "schema": {
+              "enum": ["O", "B", "A", "F", "G", "K", "M", "L", "T", "Y", "U"],
+              "type": "string",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Minimum number of stars",
+            "example": 1,
+            "in": "query",
+            "name": "min_stars",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Maximum number of stars",
+            "example": 10,
+            "in": "query",
+            "name": "max_stars",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListStarSystemsResponse"
+                }
+              }
+            },
+            "description": "ListStarSystemsResponse"
+          }
+        },
+        "summary": "List star systems",
+        "tags": ["Stars"]
+      }
+    },
+    "/api/v1/star_systems/{id}": {
+      "get": {
+        "callbacks": {},
+        "description": "Returns detailed information for a star system given its ID.",
+        "operationId": "StarChartWeb.API.V1.StarSystemController.show",
+        "parameters": [
+          {
+            "description": "Star system ID",
+            "example": 1,
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetStarSystemResponse"
+                }
+              }
+            },
+            "description": "Star System"
+          }
+        },
+        "summary": "Retrieve a star system",
+        "tags": ["Stars"]
+      }
+    },
+    "/api/v1/star_systems/{origin_id}/nearby": {
+      "get": {
+        "callbacks": {},
+        "description": "Returns the list of star systems that are near the specified origin star system. The results can be filtered by maximum distance (in light years), spectral class, and star counts.",
+        "operationId": "StarChartWeb.API.V1.StarSystemController.nearby",
+        "parameters": [
+          {
+            "description": "Origin star system ID",
+            "example": 1,
+            "in": "path",
+            "name": "origin_id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Maximum distance in light years (default: 25.0, min: 0.1, max: 100)",
+            "example": 25.0,
+            "in": "query",
+            "name": "distance",
+            "required": false,
+            "schema": {
+              "format": "float",
+              "maximum": 100.0,
+              "minimum": 0.1,
+              "type": "number",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Page number",
+            "example": 1,
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Number of items per page",
+            "example": 100,
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Filter by spectral class. Allowed values are O, B, A, F, G, K, M, L, T, Y, or U for Unknown.",
+            "example": "G",
+            "in": "query",
+            "name": "spectral_class",
+            "required": false,
+            "schema": {
+              "enum": ["O", "B", "A", "F", "G", "K", "M", "L", "T", "Y", "U"],
+              "type": "string",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Minimum number of stars",
+            "example": 1,
+            "in": "query",
+            "name": "min_stars",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          },
+          {
+            "description": "Maximum number of stars",
+            "example": 10,
+            "in": "query",
+            "name": "max_stars",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NearbyStarSystemsResponse"
+                }
+              }
+            },
+            "description": "NearbyStarSystemsResponse"
+          }
+        },
+        "summary": "Retrieve nearby star systems",
+        "tags": ["Stars"]
+      }
+    },
+    "/api/v1/stars/{id}": {
+      "get": {
+        "callbacks": {},
+        "description": "Returns details for a star given its ID.",
+        "operationId": "StarChartWeb.API.V1.StarController.show",
+        "parameters": [
+          {
+            "description": "Star ID",
+            "example": 1,
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "x-struct": null,
+              "x-validate": null
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GetStarResponse" }
+              }
+            },
+            "description": "Star"
+          }
+        },
+        "summary": "Retrieve a star",
+        "tags": ["Stars"]
+      }
+    },
+    "/api/v1/user/profile": {
+      "get": {
+        "callbacks": {},
+        "description": "Returns the profile information for the currently authenticated user",
+        "operationId": "StarChartWeb.API.V1.UserController.profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "properties": {
+                        "confirmed_at": {
+                          "description": "When the user confirmed their account",
+                          "format": "date-time",
+                          "nullable": true,
+                          "type": "string",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
+                        "email": {
+                          "description": "User's email address",
+                          "example": "user@example.com",
+                          "format": "email",
+                          "type": "string",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
+                        "id": {
+                          "description": "User ID",
+                          "example": 1,
+                          "type": "integer",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
+                        "last_login_at": {
+                          "description": "When the user last logged in",
+                          "format": "date-time",
+                          "nullable": true,
+                          "type": "string",
+                          "x-struct": null,
+                          "x-validate": null
+                        },
+                        "username": {
+                          "description": "User's username",
+                          "example": "stargazer",
+                          "type": "string",
+                          "x-struct": null,
+                          "x-validate": null
+                        }
+                      },
+                      "required": ["id", "email", "username"],
+                      "type": "object",
+                      "x-struct": null,
+                      "x-validate": null
+                    }
+                  },
+                  "required": ["data"],
+                  "type": "object",
+                  "x-struct": null,
+                  "x-validate": null
+                }
+              }
+            },
+            "description": "User profile"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          }
+        },
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Get user profile",
+        "tags": ["User"]
+      }
+    }
+  },
+  "security": [],
+  "servers": [{ "url": "http://localhost:4000", "variables": {} }],
+  "tags": []
+}

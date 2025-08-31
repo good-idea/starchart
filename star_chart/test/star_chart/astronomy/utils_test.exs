@@ -64,7 +64,7 @@ defmodule StarChart.Astronomy.UtilsTest do
           z: 0.0
         }
       }
-      
+
       system2 = %{
         primary_star: %{
           x: 3.0,
@@ -72,17 +72,17 @@ defmodule StarChart.Astronomy.UtilsTest do
           z: 0.0
         }
       }
-      
+
       result = Utils.calculate_distance_between_systems(system1, system2)
-      
+
       # The distance should be 5.0 parsecs (3-4-5 triangle)
       assert result.distance_parsecs == 5.0
-      
+
       # The light year distance should be the parsec distance converted
       expected_ly = Utils.parsec_to_light_years(5.0)
       assert result.distance_light_years == expected_ly
     end
-    
+
     test "calculates distance with different coordinates" do
       system1 = %{
         primary_star: %{
@@ -91,7 +91,7 @@ defmodule StarChart.Astronomy.UtilsTest do
           z: 3.0
         }
       }
-      
+
       system2 = %{
         primary_star: %{
           x: 4.0,
@@ -99,13 +99,13 @@ defmodule StarChart.Astronomy.UtilsTest do
           z: 6.0
         }
       }
-      
+
       result = Utils.calculate_distance_between_systems(system1, system2)
-      
+
       # Distance should be sqrt((4-1)^2 + (5-2)^2 + (6-3)^2) = sqrt(27) = 5.196
       expected_parsecs = :math.sqrt(27)
       assert_in_delta result.distance_parsecs, expected_parsecs, 0.001
-      
+
       # Light year distance should match the conversion
       expected_ly = Utils.parsec_to_light_years(expected_parsecs)
       assert result.distance_light_years == expected_ly

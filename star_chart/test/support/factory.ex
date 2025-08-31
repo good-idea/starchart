@@ -40,19 +40,19 @@ defmodule StarChart.Factory do
   def star_factory do
     # Default to a random spectral type
     spectral_type = Enum.random(@spectral_types)
-    
+
     # Extract the spectral class from the first character of the spectral type
     # and ensure it's uppercase
     spectral_class = String.slice(spectral_type, 0, 1) |> String.upcase()
-    
+
     # Check if it's a valid spectral class, otherwise use "U"
-    spectral_class = 
+    spectral_class =
       if spectral_class =~ ~r/[OBAFGKMLTY]/ do
         spectral_class
       else
         "U"
       end
-    
+
     %Star{
       name: sequence(:name, &"Star #{&1}"),
       right_ascension: 0.0,
